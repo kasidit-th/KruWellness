@@ -25,13 +25,25 @@ if (process.env.NODE_ENV === 'production') {
 
 
 app.get('/csv-data', (req, res) => {
-  fs.readFile(csvPath, 'utf8', (err, data) => {
-    if (err) {
-      console.error('Error reading CSV:', err);
-      return res.status(500).json({ error: 'CSV file not found' });
-    }
-    res.json({ data: data });
-  });
+  try {
+    const workbook = XLSX.readFile(csvPath, { type: 'file' });
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+    res.json({
+      status: 'success',
+      total: jsonData.length,
+      sheetName: sheetName,
+      data: jsonData
+    });
+  } catch (err) {
+    console.error('Failed to read CSV file:', err);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to read or parse CSV file.'
+    });
+  }
 });
 
 if (process.env.NODE_ENV === 'production') {
