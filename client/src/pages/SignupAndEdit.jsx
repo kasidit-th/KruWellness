@@ -9,15 +9,23 @@ const SignupAndEdit = ({ memberData, isEditMode }) => {
   const [step, setStep] = useState(0);
   const [val, setVal] = useState(memberData || {});
 
-  const handleValueChange = (newVal) => {
-    console.log(val);
-    setVal({ ...val, ...newVal });
-  };
+  const excludedKeys = ['district', 'postalCode', 'province', 'subdistrict'];
 
-  const handleChange = (field) => (e) => {
+  const handleValueChange = (newVal) => {
+    const filtered = Object.fromEntries(
+      Object.entries(newVal).filter(([key]) => !excludedKeys.includes(key))
+    );
     console.log(val);
-    setVal({ ...val, [field]: e.target.value });
+    setVal({ ...val, ...filtered });
   };
+  
+  const handleChange = (field) => (e) => {
+    if (excludedKeys.includes(field)) return; // ถ้า field อยู่ใน excluded list ให้ไม่ทำอะไรเลย
+  
+    const value = e.target.type === 'file' ? e.target.files[0] : e.target.value;
+    setVal({ ...val, [field]: value });
+  };
+  
 
   const next = () => setStep((prev) => Math.min(prev + 1, 2));
   const prev = () => setStep((prev) => Math.max(prev - 1, 0));
@@ -47,7 +55,7 @@ const SignupAndEdit = ({ memberData, isEditMode }) => {
   };
 
   return (
-    <div style={{ margin: '0% 10%' }}>
+    <div style={{ margin: '0% 5%' }}>
       <StepIndicator step={step} />
       {step === 0 && <FormStep1 val={val} handleChange={handleChange} handleValueChange={handleValueChange} />}
       {step === 1 && <FormStep2 val={val} setVal={setVal} />}

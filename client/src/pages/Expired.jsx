@@ -22,11 +22,11 @@ const Expired = () => {
       {
         expired: "เดือน กุมภาพันธ์ ปีพ.ศ. 2568",
         teachers: [
-          { id: "8001123456789", nickname: "หนึ่ง", name: "สมชาย ใจดี", image: "https://i.pravatar.cc/150?img=1" },
-          { id: "8002123456789", nickname: "สอง", name: "สุดา ศรีสวย", image: "https://i.pravatar.cc/150?img=2" },
-          { id: "8003123456789", nickname: "สาม", name: "ปิติพงษ์ บุญมาก", image: "https://i.pravatar.cc/150?img=3" },
-          { id: "8004123456789", nickname: "สี่", name: "วันดี สมสุข", image: "https://i.pravatar.cc/150?img=4" },
-          { id: "8005123456789", nickname: "ห้า", name: "กานต์ จิตรใจ", image: "https://i.pravatar.cc/150?img=5" }
+          { id: "8011123456789", nickname: "แดง", name: "นิรันดร์ สุขใจ", image: "https://i.pravatar.cc/150?img=11" },
+          { id: "8012123456789", nickname: "เขียว", name: "ปาริชาติ ใจเย็น", image: "https://i.pravatar.cc/150?img=12" },
+          { id: "8013123456789", nickname: "น้ำเงิน", name: "อุดมพร เก่งกล้า", image: "https://i.pravatar.cc/150?img=13" },
+          { id: "8014123456789", nickname: "ชมพู", name: "สุรเดช แสงใส", image: "https://i.pravatar.cc/150?img=14" },
+          { id: "8015123456789", nickname: "ม่วง", name: "อัมพร สายใจ", image: "https://i.pravatar.cc/150?img=15" }
         ]
       },
       {
@@ -42,11 +42,11 @@ const Expired = () => {
       {
         expired: "เดือน เมษายา ปีพ.ศ. 2568",
         teachers: [
-          { id: "8011123456789", nickname: "แดง", name: "นิรันดร์ สุขใจ", image: "https://i.pravatar.cc/150?img=11" },
-          { id: "8012123456789", nickname: "เขียว", name: "ปาริชาติ ใจเย็น", image: "https://i.pravatar.cc/150?img=12" },
-          { id: "8013123456789", nickname: "น้ำเงิน", name: "อุดมพร เก่งกล้า", image: "https://i.pravatar.cc/150?img=13" },
-          { id: "8014123456789", nickname: "ชมพู", name: "สุรเดช แสงใส", image: "https://i.pravatar.cc/150?img=14" },
-          { id: "8015123456789", nickname: "ม่วง", name: "อัมพร สายใจ", image: "https://i.pravatar.cc/150?img=15" }
+          { id: "8001123456789", nickname: "หนึ่ง", name: "สมชาย ใจดี", image: "https://i.pravatar.cc/150?img=1" },
+          { id: "8002123456789", nickname: "สอง", name: "สุดา ศรีสวย", image: "https://i.pravatar.cc/150?img=2" },
+          { id: "8003123456789", nickname: "สาม", name: "ปิติพงษ์ บุญมาก", image: "https://i.pravatar.cc/150?img=3" },
+          { id: "8004123456789", nickname: "สี่", name: "วันดี สมสุข", image: "https://i.pravatar.cc/150?img=4" },
+          { id: "8005123456789", nickname: "ห้า", name: "กานต์ จิตรใจ", image: "https://i.pravatar.cc/150?img=5" }
         ]
       }
     ];
