@@ -41,7 +41,7 @@ const Navbar = () => {
 const App = () => {
   return (
     <BrowserRouter>
-      <div style={{ display: "flex", flexDirection: "column" }}>
+      <div style={{ display: "flex", flexDirection: "column" , marginBottom:"20vh" }}>
         <Navbar />
         <Routes>
           <Route path="/" element={<HomePage />} />
