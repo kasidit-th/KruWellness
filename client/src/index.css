@@ -40,3 +40,114 @@ p{
   color: #F3C623;
 
 }
+
+.formLabel {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 25px;
+  font-size: 24px;
+}
+
+.formLabel input {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 24px;
+  transition: border-color 0.2s ease-in-out;
+  width: 200px;
+}
+
+.formLabel input:focus,
+.formLabel input:not(:placeholder-shown) {
+  border: 0.5px solid #000000;
+}
+
+.formLabel label{
+  padding: 8px 12px;
+}
+
+.formLabel input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.dropdownInput {
+  cursor: text;
+}
+
+.idCardInputWrapper {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  width: fit-content;
+  font-family: monospace;
+  margin-top: 5px;
+}
+
+.idBox {
+  width: 28px;
+  height: 36px;
+  font-size: 20px;
+  text-align: center;
+  border: 1px solid #999;
+  border-radius: 4px;
+}
+
+.dash {
+  padding: 0 4px;
+  font-size: 22px;
+  align-self: center;
+}
+
+.radioGroup {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.radioItem {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.radioItem input[type="radio"] {
+  appearance: none;
+  width: 30px;
+  height: 30px;
+  border: 2px solid #F3C623;
+  border-radius: 5px;
+  background-color: white;
+  position: relative;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.radioItem input[type="radio"]::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 24px;
+  background-color: #F3C623;
+  border-radius: 5px;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.2s ease;
+}
+
+.radioItem input[type="radio"]:checked::before {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.radioItem input[type="radio"]:hover {
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+
+.radioItem span {
+  margin-left: 0.5rem;
+  font-size: 24px;
+}
