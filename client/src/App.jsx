@@ -17,7 +17,7 @@ const Navbar = () => {
 
   return (
     <nav>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem", alignItems: "center" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem", alignItems: "center" , padding:"0px 5vw" }}>
         <div></div>
         <div style={{ display: "flex", justifyContent: "space-between", textAlign: "center", margin: "20px 0px" }}>
           <Link to="/" style={linkStyle('/')}>ดูข้อมูลครู</Link>
