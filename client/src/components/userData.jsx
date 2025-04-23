@@ -4,13 +4,13 @@ import SearchBar from './SearchBar';
 const UserData = ({ data }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filterTeachers = (teachers) => {
+  const filterTeachers = (teachers) => {    
     return teachers.filter((teacher) => {
       const keyword = searchTerm.toLowerCase();
       return (
-        teacher.id.toLowerCase().includes(keyword) ||
-        teacher.nickname.toLowerCase().includes(keyword) ||
-        teacher.name.toLowerCase().includes(keyword)
+        teacher.id?.toLowerCase().includes(keyword) ||
+        teacher.nickname?.toLowerCase().includes(keyword) ||
+        teacher.name?.toLowerCase().includes(keyword) 
       );
     });
   };
@@ -25,16 +25,24 @@ const UserData = ({ data }) => {
       
       <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
-      {data.length > 0 ? (
+      {data?.length > 0 ? (
         data.map((schoolData, index) => {
           const filteredTeachers = filterTeachers(schoolData.teachers);
-          if (filteredTeachers.length === 0) return null;
+          if (filteredTeachers.length === 0) return null; 
 
           return (
             <div key={index} style={{ marginBottom: '30px' }}>
-              <h3 style={{ fontSize: '20px', backgroundColor: "#127681", color: "#F5F5F5", padding: "10px", margin: "0" }}>
-                {schoolData.school}
-              </h3>
+                <h3 style={{ fontSize: '20px', backgroundColor: "#127681", color: "#F5F5F5", padding: "10px", margin: "0" }}>
+                  {
+                    schoolData.school
+                    ? schoolData.school
+                    : schoolData.expired
+                    ? schoolData.expired
+                    : schoolData.membership
+                    ? schoolData.membership
+                    :`เกิดข้อผิดพลาด`
+                  }
+                </h3>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0px' }}>
                 {filteredTeachers.map((teacher) => (
                   <div key={teacher.id} className='ListContainer'>
@@ -53,7 +61,7 @@ const UserData = ({ data }) => {
           );
         })
       ) : (
-        <p style={{ color: '#888' }}>No data available</p>
+        <p style={{ color: '#000000' }}>--ไม่พบข้อมูล--</p>
       )}
     </div>
   );
