@@ -57,6 +57,7 @@ p{
   font-size: 24px;
   transition: border-color 0.2s ease-in-out;
   width: 200px;
+  text-align: center;
 }
 
 .formLabel input:focus,
@@ -150,4 +151,20 @@ p{
 .radioItem span {
   margin-left: 0.5rem;
   font-size: 24px;
+}
+
+.button {
+  font-size: 24px;
+  margin-right: 10px;
+  cursor: pointer;
+  color: #242323;
+  background-color: #F3C623;
+  padding: 20px 50px;
+  border: none;
+  border-radius: 8px; 
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #e0b81f;
 }
