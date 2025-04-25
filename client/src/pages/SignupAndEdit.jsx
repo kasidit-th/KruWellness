@@ -20,7 +20,7 @@ const SignupAndEdit = ({ memberData, isEditMode }) => {
   };
   
   const handleChange = (field) => (e) => {
-    if (excludedKeys.includes(field)) return; // ถ้า field อยู่ใน excluded list ให้ไม่ทำอะไรเลย
+    if (excludedKeys.includes(field)) return; 
   
     const value = e.target.type === 'file' ? e.target.files[0] : e.target.value;
     setVal({ ...val, [field]: value });
@@ -59,14 +59,14 @@ const SignupAndEdit = ({ memberData, isEditMode }) => {
       <StepIndicator step={step} />
       {step === 0 && <FormStep1 val={val} handleChange={handleChange} handleValueChange={handleValueChange} />}
       {step === 1 && <FormStep2 val={val} setVal={setVal} />}
-      {step === 2 && <FormStep3 val={val} setVal={setVal} />}
+      {step === 2 && <FormStep3 val={val} setVal={setVal} handleChange={handleChange} handleValueChange={handleValueChange}/>}
 
-      <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'space-between' }}>
-        {step > 0 && <button onClick={prev}>ย้อนกลับ</button>}
+      <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'end' }}>
+        {step > 0 && <button className='button' onClick={prev}>ย้อนกลับ</button>}
         {step < 2 ? (
-          <button onClick={next}>ถัดไป</button>
+          <button className='button' onClick={next}>ถัดไป</button>
         ) : (
-          <button onClick={handleSubmit}>ส่งข้อมูล</button>
+          <button className='button' onClick={handleSubmit}>ส่งข้อมูล</button>
         )}
       </div>
     </div>
