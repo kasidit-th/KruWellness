@@ -56,7 +56,16 @@ p{
   border-radius: 4px;
   font-size: 24px;
   transition: border-color 0.2s ease-in-out;
-  width: 200px;
+  width: 175px;
+  text-align: center;
+}
+.formData {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 24px;
+  transition: border-color 0.2s ease-in-out;
+  width: 175px;
   text-align: center;
 }
 
@@ -92,7 +101,7 @@ p{
   height: 36px;
   font-size: 20px;
   text-align: center;
-  border: 1px solid #999;
+  border: 1px solid #ccc;
   border-radius: 4px;
 }
 
@@ -168,3 +177,34 @@ p{
 .button:hover {
   background-color: #e0b81f;
 }
+
+/* ////////////////////////////////////// */
+.customRadioItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 20px;
+}
+
+.customRadioBox {
+  width: 30px;
+  height: 30px;
+  border: 2px solid #F3C623;
+  border-radius: 5px;
+  background-color: white;
+  position: relative;
+}
+
+.customRadioBox.checked::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 25px;
+  height: 25px;
+  background-color: #F3C623;
+  border-radius: 5px;
+  transform: translate(-50%, -50%);
+}
+
+

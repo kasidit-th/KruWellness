@@ -41,6 +41,7 @@ const formStep3 = ({ val, handleChange, handleValueChange }) => (
           placeholder="ชื่อโรงเรียน"
           value={val.schoolName || ""}
           onChange={handleChange("schoolName")}
+          style={{width:"480px"}}
         />
       </div>
       <div>

@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage';
 import SignupAndEdit from './pages/SignupAndEdit';
 import Expired from './pages/Expired';
 import Membership from './pages/Membership';
+import UserInfo from './pages/userInfo';
 
 const Navbar = () => {
   const location = useLocation();
@@ -48,6 +49,7 @@ const App = () => {
           <Route path="/expired" element={<Expired />} />
           <Route path="/membership" element={<Membership />} />
           <Route path="/SignupAndEdit" element={<SignupAndEdit />} />
+          <Route path="/userInfo/:citizenId" element={<UserInfo />} />
         </Routes>
       </div>
     </BrowserRouter>
