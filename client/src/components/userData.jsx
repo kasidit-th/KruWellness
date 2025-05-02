@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import SearchBar from './SearchBar';
+import { useNavigate } from 'react-router-dom';
 
 const UserData = ({ data }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
 
   const filterTeachers = (teachers) => {    
     return teachers.filter((teacher) => {
@@ -45,7 +47,7 @@ const UserData = ({ data }) => {
                 </h3>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0px' }}>
                 {filteredTeachers.map((teacher) => (
-                  <div key={teacher.id} className='ListContainer'>
+                  <div onClick={() => navigate(`/userInfo/${teacher.id}`)} key={teacher.id} className='ListContainer'>
                     <img
                       src={teacher.image}
                       alt={teacher.name}

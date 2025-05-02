@@ -4,10 +4,13 @@ import StepIndicator from '../components/StepIndicator';
 import FormStep1 from '../components/formStep1';
 import FormStep2 from '../components/formStep2';
 import FormStep3 from '../components/formStep3';
+import { useNavigate } from 'react-router-dom';
 
 const SignupAndEdit = ({ memberData, isEditMode }) => {
   const [step, setStep] = useState(0);
   const [val, setVal] = useState(memberData || {});
+  const navigate = useNavigate();
+
 
   const excludedKeys = ['district', 'postalCode', 'province', 'subdistrict'];
 
@@ -48,6 +51,8 @@ const SignupAndEdit = ({ memberData, isEditMode }) => {
 
       alert('ส่งข้อมูลเรียบร้อยแล้ว!');
       console.log(val);
+      navigate(`/userInfo/${val.citizenId}`);
+
     } catch (error) {
       console.error('Error submitting form:', error);
       alert('เกิดข้อผิดพลาดในการส่งข้อมูล');
