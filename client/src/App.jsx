@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter , Routes, Route, Link, useLocation } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import SignupAndEdit from './pages/SignupAndEdit';
 import Expired from './pages/Expired';
@@ -42,6 +42,19 @@ const Navbar = () => {
 
 const App = () => {
   return (
+    //   <div style={{ display: "flex", flexDirection: "column" , marginBottom:"20vh" }}>
+    //     <Navbar />
+    //     <Routes>
+    //       <Route path="/" element={<HomePage />} />
+    //       <Route path="/expired" element={<Expired />} />
+    //       <Route path="/membership" element={<Membership />} />
+    //       <Route path="/SignupAndEdit" element={<SignupAndEdit />} />
+    //       <Route path="/userInfo/:citizenId" element={<UserInfo />} />
+    //     </Routes>
+    //   </div>
+
+    
+    <BrowserRouter> 
       <div style={{ display: "flex", flexDirection: "column" , marginBottom:"20vh" }}>
         <Navbar />
         <Routes>
@@ -52,6 +65,7 @@ const App = () => {
           <Route path="/userInfo/:citizenId" element={<UserInfo />} />
         </Routes>
       </div>
+      </BrowserRouter>
   );
 };
 
