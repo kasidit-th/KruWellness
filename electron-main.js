@@ -2,15 +2,14 @@ const { app, BrowserWindow } = require('electron')
 const path = require('path')
 const isDev = require('electron-is-dev')
 const { fork } = require('child_process')
-const { spawn } = require('child_process');
-
+const fs = require('fs')
 
 let mainWindow
 let serverProcess
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1200,
+    width: 1280,
     height: 800,
     webPreferences: {
       devTools: true,
@@ -19,34 +18,50 @@ function createWindow() {
     }
   })
 
-  mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools()
 
   if (isDev) {
     mainWindow.loadURL('http://localhost:3000')
   } else {
-    const serverPath = path.join(
-      process.resourcesPath,
-      'server',
-      'index.js'
-    )
-    console.log('Server path:', serverPath)
-
+    const serverPath = path.join(process.resourcesPath, 'server', 'index.js')
     serverProcess = fork(serverPath, {
       env: { NODE_ENV: 'production' }
     })
 
-console.log('Resources path:', process.resourcesPath);
     serverProcess.on('error', (err) => {
-      console.error('Server failed to start:', err);
-    });
-    
+      console.error('Server failed to start:', err)
+    })
+
     serverProcess.on('exit', (code) => {
-      console.error('Server exited with code:', code);
-    });
+      console.error('Server exited with code:', code)
+    })
 
     const indexPath = path.join(process.resourcesPath, 'client', 'build', 'index.html')
-mainWindow.loadFile(indexPath)
 
+    const waitForFile = (filePath, timeout = 10000) => {
+      return new Promise((resolve, reject) => {
+        const start = Date.now()
+        const check = () => {
+          if (fs.existsSync(filePath)) {
+            return resolve()
+          }
+          if (Date.now() - start > timeout) {
+            return reject(new Error('Timeout waiting for file'))
+          }
+          setTimeout(check, 300)
+        }
+        check()
+      })
+    }
+
+    waitForFile(indexPath)
+      .then(() => {
+        mainWindow.loadFile(indexPath)
+      })
+      .catch((err) => {
+        console.error('Failed to load frontend:', err)
+        mainWindow.loadURL('data:text/html,<h1>Failed to load frontend</h1>')
+      })
   }
 
   mainWindow.on('closed', () => (mainWindow = null))
