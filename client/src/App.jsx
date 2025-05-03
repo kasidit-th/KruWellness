@@ -1,10 +1,11 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import SignupAndEdit from './pages/SignupAndEdit';
 import Expired from './pages/Expired';
 import Membership from './pages/Membership';
 import UserInfo from './pages/userInfo';
+
 
 const Navbar = () => {
   const location = useLocation();
@@ -41,7 +42,6 @@ const Navbar = () => {
 
 const App = () => {
   return (
-    <BrowserRouter>
       <div style={{ display: "flex", flexDirection: "column" , marginBottom:"20vh" }}>
         <Navbar />
         <Routes>
@@ -52,7 +52,6 @@ const App = () => {
           <Route path="/userInfo/:citizenId" element={<UserInfo />} />
         </Routes>
       </div>
-    </BrowserRouter>
   );
 };
 
