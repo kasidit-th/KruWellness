@@ -7,10 +7,7 @@
   "rebuild": "cd server && npm rebuild",
     "start:client": "cd client && npm start",
     "start:server": "cd server && nodemon index.js",
-    "start:electron": "electron .",
-    "start": "concurrently \"npm run start:server\" \"npm run start:client\" \"npm run start:electron\"",
-    "build:client": "cd client && npm run build",
-    "dist": "electron-builder --win --x64"
+    "start": "concurrently \"npm run start:server\" \"npm run start:client\" "
   },
   "dependencies": {
     "electron-is-dev": "^2.0.0"

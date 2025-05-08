@@ -19,9 +19,9 @@ const Navbar = () => {
 
   return (
     <nav>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem", alignItems: "center" , padding:"0px 5vw" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr 1fr", gap: "1rem", alignItems: "center" , padding:"0px 5vw" }}>
         <div></div>
-        <div style={{ display: "flex", justifyContent: "space-between", textAlign: "center", margin: "20px 0px" }}>
+        <div style={{ display: "flex", justifyContent: "space-evenly", textAlign: "center", margin: "20px 0px" }}>
           <Link to="/" style={linkStyle('/')}>ดูข้อมูลครู</Link>
           <Link to="/expired" style={linkStyle('/expired')}>บัตรหมดอายุ</Link>
           <Link to="/membership" style={linkStyle('/membership')}>สมาชิก</Link>
