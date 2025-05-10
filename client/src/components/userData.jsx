@@ -45,7 +45,11 @@ const UserData = ({ data }) => {
                     :`เกิดข้อผิดพลาด`
                   }
                 </h3>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0px' }}>
+<div style={{ 
+  display: 'grid', 
+  gridTemplateColumns: 'repeat(5, 1fr)', 
+  gap: '0px', 
+}}>
                 {filteredTeachers.map((teacher) => (
                   <div onClick={() => navigate(`/userInfo/${teacher.id}`)} key={teacher.id} className='ListContainer'>
                     <img
