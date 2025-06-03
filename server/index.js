@@ -1,64 +1,42 @@
-const express = require('express')
-const path = require('path')
-const app = express()
-const port = process.env.PORT || 5000
+const express = require("express");
+const fs = require("fs");
+const path = require("path");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const sequelizedb = require("./database/config.js");
+const db = require("./models");
+const port = process.env.PORT || 5000;
 
-const XLSX = require('xlsx');
-const fs = require('fs');
-const cors = require('cors');
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? 'http://localhost:5000' 
-    : 'http://localhost:3000'
-}));
+const app = express();
 app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-const csvPath = process.env.NODE_ENV === 'production'
-  ? path.join(process.resourcesPath, 'server', 'data.csv')
-  : path.join(__dirname, 'data.csv'); 
-
-
-if (process.env.NODE_ENV === 'production') {
-  const clientBuildPath = path.join(__dirname, '../client/build')
-  app.use(express.static(clientBuildPath))
+if (process.env.NODE_ENV === "production") {
+  const clientBuildPath = path.join(__dirname, "../client/build");
+  app.use(express.static(clientBuildPath));
 }
 
+fs.readdirSync("./routes").map((r) => app.use("/", require("./routes/" + r)));
 
-app.get('/csv-data', (req, res) => {
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+  })
+);
+
+const start = async () => {
   try {
-    const workbook = XLSX.readFile(csvPath, { type: 'file' });
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-    const jsonData = XLSX.utils.sheet_to_json(worksheet);
-
-    res.json({
-      status: 'success',
-      total: jsonData.length,
-      sheetName: sheetName,
-      data: jsonData
+    await sequelizedb.authenticate();
+    console.log("Database connected...");
+    await db.sequelize.sync();
+    app.listen(port, () => {
+      console.log("Server running on port:", port);
+      console.log(`http://localhost:${port}`);
     });
   } catch (err) {
-    console.error('Failed to read CSV file:', err);
-    res.status(500).json({
-      status: 'error',
-      message: 'Failed to read or parse CSV file.'
-    });
+    console.error("Startup error:", err);
   }
-});
+};
 
-if (process.env.NODE_ENV === 'production') {
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/build/index.html'))
-  })
-}
-
-const server = app.listen(port, () => {
-  console.log(`Server running on port ${port}`)
-  console.log('CSV Path:', csvPath);
-  if (process.send) process.send('ready') 
-});
-
-server.on('error', (err) => {
-  console.error('Server error:', err);
-  process.exit(1);
-});
+start();

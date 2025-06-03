@@ -1,0 +1,543 @@
+const Form = require("../models/Form.js");
+const Personal = require("../models/Personal_Info.js");
+const School = require("../models/School_Info.js");
+const Welfare = require("../models/Welfare_Recipient.js");
+const { Op } = require("sequelize");
+const sequelize = require("../database/config");
+const Sequelize = require("sequelize");
+const { Thai_to_ISO, ISO_to_Thai } = require("../tools/function.js");
+require("dotenv").config();
+
+const maritalStatus = (status) => {
+  if (status === "married") {
+    return true;
+  } else return false;
+};
+const trimRequestBody = (body) => {
+  const trimmed = {};
+  for (const key in body) {
+    if (typeof body[key] === "string") {
+      trimmed[key] = body[key].trim();
+    } else {
+      trimmed[key] = body[key]; // Leave non-strings unchanged
+    }
+  }
+  return trimmed;
+};
+
+exports.create = async (req, res) => {
+  try {
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({ message: "Request body is missing" });
+    }
+    req.body = trimRequestBody(req.body);
+    const personDB = await Personal.findOne({
+      where: { firstname: req.body.name, lastname: req.body.lastname },
+    });
+    if (!personDB) {
+      const birthdate = Thai_to_ISO(
+        req.body.birthDate,
+        req.body.birthMonth,
+        req.body.birthYear
+      );
+      const marital_status = maritalStatus(req.body.maritalStatus);
+      const address = [
+        req.body.houseNumber,
+        req.body.housemoo,
+        req.body.houseSoi,
+        req.body.houseRoad,
+        req.body.houseSubdistric,
+        req.body.houseDistrict,
+        req.body.houseProvince,
+      ];
+      const personel_data = {
+        prefix: req.body.titleName,
+        firstname: req.body.name,
+        lastname: req.body.lastname,
+        nickname: req.body.nickname,
+        picture: req.files.picture,
+        birthdate: birthdate,
+        age: req.body.age,
+        idcard_number: req.body.citizenId,
+        schoolposition: req.body.teachStatus,
+        mobile_number: req.body.mobilePhone,
+        landline_number: req.body.housePhone,
+        address: address,
+        marital_status: marital_status,
+        spouse_prefix: req.body.titlespouseName,
+        spouse_firstname: req.body.spouseName,
+        spouse_lastname: req.body.spouseLastname,
+        spouse_age: req.body.spouseAge,
+        spouse_mobile_number: req.body.spousePhone,
+      };
+      const personal = await Personal.create(personel_data);
+      req.personid = personal.id;
+    } else req.personid = personDB.id;
+    const schoolDB = await School.findOne({
+      where: { schoolname: req.body.schoolName },
+    });
+    if (!schoolDB) {
+      const schooladdress = [
+        req.body.schoolName,
+        req.body.schoolRoad,
+        req.body.schoolSubdistrict,
+        req.body.schoolDistrict,
+        req.body.schoolProvince,
+      ];
+      const school_data = {
+        schoolname: req.body.schoolName,
+        servicearea: req.body.educationDistrict,
+        examunit: req.body.examUnit,
+        schooladdress: schooladdress,
+      };
+      const school = await School.create(school_data);
+      req.schoolid = school.id;
+    } else req.schoolid = schoolDB.id;
+
+    const welfare_data = {
+      personid: req.personid,
+      relation: req.body.welfareApplicantType,
+      prefix: req.body.titlewelfareApplicantName,
+      firstname: req.body.welfareApplicantName,
+      lastname: req.body.welfareApplicantLastName,
+    };
+    const welfare = await Welfare.create(welfare_data);
+
+    const informdate = Thai_to_ISO(
+      req.body.RegisterDate,
+      req.body.RegisterMonth,
+      req.body.RegisterYear
+    );
+    let form_data = {
+      number: req.body.docId,
+      informdate: informdate,
+      personid: req.personid,
+      welfareid: welfare.id,
+      schoolid: req.schoolid,
+      type: req.body.note,
+      copy_file: req.copy_form,
+      copy_idcard: req.copy_idcard,
+      copy_teachercard: req.copy_teachercard,
+    };
+    if (String(req.body.note) === "newCard") {
+      const cardDB = await Form.findOne({
+        where: { personid: req.personid, type: "continueCard" },
+      });
+      if (cardDB.length === 0) {
+        form_data.type = "continueCard";
+        await Form.create(form_data);
+      }
+    }
+    await Form.create(form_data);
+    res.status(200).json({
+      message: "Create form success",
+    });
+  } catch (error) {
+    console.log("Error: ", error);
+    res.status(500).json({
+      message: "Error create new form",
+    });
+  }
+};
+
+exports.update = async (req, res) => {
+  try {
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({ message: "Request body is missing" });
+    }
+
+    req.body = trimRequestBody(req.body);
+
+    const formid = req.body.formid;
+    const form = await Form.findOne({ where: { id: formid } });
+    if (!form) {
+      return res.status(404).json({ message: "Form not found" });
+    }
+
+    const birthdate = Thai_to_ISO(
+      req.body.birthDate,
+      req.body.birthMonth,
+      req.body.birthYear
+    );
+    const marital_status = maritalStatus(req.body.maritalStatus);
+
+    const address = [
+      req.body.houseNumber,
+      req.body.housemoo,
+      req.body.houseSoi,
+      req.body.houseRoad,
+      req.body.houseSubdistric,
+      req.body.houseDistrict,
+      req.body.houseProvince,
+    ];
+
+    const schooladdress = [
+      req.body.schoolName,
+      req.body.schoolRoad,
+      req.body.schoolSubdistrict,
+      req.body.schoolDistrict,
+      req.body.schoolProvince,
+    ];
+
+    const personal = await Personal.findOne({ where: { id: form.personid } });
+    const welfare = await Welfare.findOne({
+      where: { personid: form.personid },
+    });
+    const school = await School.findOne({ where: { id: form.schoolid } });
+
+    if (!personal || !welfare || !school) {
+      return res.status(404).json({ message: "Related record not found" });
+    }
+
+    const personel_data = {
+      prefix: req.body.titleName,
+      firstname: req.body.name,
+      lastname: req.body.lastname,
+      nickname: req.body.nickname,
+      picture: req.files?.picture ?? null,
+      birthdate,
+      age: req.body.age,
+      idcard_number: req.body.citizenId,
+      schoolposition: req.body.teachStatus,
+      mobile_number: req.body.mobilePhone,
+      landline_number: req.body.housePhone,
+      address,
+      marital_status,
+      spouse_prefix: req.body.titlespouseName,
+      spouse_firstname: req.body.spouseName,
+      spouse_lastname: req.body.spouseLastname,
+      spouse_age: req.body.spouseAge,
+      spouse_mobile_number: req.body.spousePhone,
+    };
+
+    const welfare_data = {
+      relation: req.body.welfareApplicantType,
+      prefix: req.body.titlewelfareApplicantName,
+      firstname: req.body.welfareApplicantName,
+      lastname: req.body.welfareApplicantLastName,
+    };
+
+    const school_data = {
+      schoolname: req.body.schoolName,
+      servicearea: req.body.educationDistrict,
+      examunit: req.body.examUnit,
+      schooladdress,
+    };
+
+    await Personal.update(personel_data, {
+      where: { id: form.personid },
+    });
+    await Welfare.update(welfare_data, {
+      where: { id: form.welfareid },
+    });
+    await School.update(school_data, {
+      where: { id: form.schoolid },
+    });
+
+    return res.status(200).json({ message: "Update form success" });
+  } catch (error) {
+    console.error("Error: ", error);
+    res.status(500).json({ message: "Error update form" });
+  }
+};
+
+exports.search = async (req, res) => {
+  try {
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({ message: "Request body is missing" });
+    }
+    req.body = trimRequestBody(req.body);
+    const keyword = req.body.keyword || "";
+    const page = parseInt(req.body.page) || 1; // default to page 1
+    const limit = 50;
+    const offset = (page - 1) * limit;
+    const type = req.body.type || "";
+    const query = await sequelize.query(
+      `
+      SELECT f.*, p.firstname, p.lastname, s.schoolname
+      FROM Forms f
+      LEFT JOIN Personal_Infos p ON f.personid = p.id
+      LEFT JOIN School_Infos s ON f.schoolid = s.id
+      WHERE (
+        (:keyword = '' OR (
+          p.firstname LIKE :kw OR
+          p.lastname LIKE :kw OR
+          p.nickname LIKE :kw OR
+          s.schoolname LIKE :kw
+        )) AND
+        (:type = '' OR f.type = :type)
+      )
+      ORDER BY f.informdate ASC
+      LIMIT :limit OFFSET :offset
+      `,
+      {
+        replacements: {
+          keyword,
+          kw: `%${keyword}%`,
+          type,
+          limit,
+          offset,
+        },
+        type: Sequelize.QueryTypes.SELECT,
+      }
+    );
+    let result = [];
+    let schoolname = [];
+    query.map((item) => {
+      if (!schoolname.includes(item.schoolname)) {
+        schoolname.push(item.schoolname);
+      }
+    });
+    schoolname.map((school) => {
+      const object = {
+        schoolname: String,
+        person: Array,
+      };
+      object.schoolname = school;
+      let temp = [];
+      query.map((item) => {
+        if (item.schoolname === school) {
+          temp.push(item);
+        }
+      });
+      object.person = temp;
+      result.push(object);
+    });
+    return res.status(200).json({ items: result, page });
+  } catch (error) {
+    console.error("Search error:", error);
+    return res.status(500).json({ message: "Error during search" });
+  }
+};
+
+exports.searchcardexpire = async (req, res) => {
+  try {
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({ message: "Request body is missing" });
+    }
+
+    req.body = trimRequestBody(req.body);
+    const type = "continueCard";
+    const keyword = req.body.keyword || "";
+    const page = parseInt(req.body.page) || 1;
+    const limit = 50;
+    const offset = (page - 1) * limit;
+
+    const fiveYearsAgo = new Date();
+    fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 4);
+    const isoDate = fiveYearsAgo.toISOString();
+
+    const query = await sequelize.query(
+      `
+      SELECT f.*, p.firstname, p.lastname, s.schoolname
+      FROM Forms f
+      LEFT JOIN Personal_Infos p ON f.personid = p.id
+      LEFT JOIN School_Infos s ON f.schoolid = s.id
+      WHERE (
+        (:keyword = '' OR (
+          p.firstname LIKE :kw OR
+          p.lastname LIKE :kw OR
+          p.nickname LIKE :kw OR
+          s.schoolname LIKE :kw
+        )) AND
+        (:type = '' OR f.type = :type) AND
+        (f.informdate >= :isoDate)
+      )
+      ORDER BY f.informdate ASC
+      LIMIT :limit OFFSET :offset
+      `,
+      {
+        replacements: {
+          keyword,
+          kw: `%${keyword}%`,
+          type,
+          isoDate,
+          limit,
+          offset,
+        },
+        type: Sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    const result = [];
+
+    query.forEach((item) => {
+      const [day, month, year] = ISO_to_Thai(item.informdate);
+
+      let yearGroup = result.find((g) => g.year === year);
+      if (!yearGroup) {
+        yearGroup = { year, months: [] };
+        result.push(yearGroup);
+      }
+
+      let monthGroup = yearGroup.months.find((m) => m.month === month);
+      if (!monthGroup) {
+        monthGroup = { month, person: [] };
+        yearGroup.months.push(monthGroup);
+      }
+      monthGroup.person.push(item);
+    });
+    return res.status(200).json({ items: result, page });
+  } catch (error) {
+    console.error("Error: ", error);
+    res.status(500).json({
+      message: "Error search",
+    });
+  }
+};
+
+exports.searchmemberfee = async (req, res) => {
+  try {
+    req.body = trimRequestBody(req.body);
+    const type = "continueMember";
+    const keyword = req.body.keyword || "";
+    const page = parseInt(req.body.page) || 1; // default to page 1
+    const limit = 50;
+    const offset = (page - 1) * limit;
+    const fiveYearsAgo = new Date();
+    fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5);
+    const isoDate = fiveYearsAgo.toISOString();
+
+    const query = await sequelize.query(
+      `
+      SELECT f.*, p.firstname, p.lastname, s.schoolname
+      FROM Forms f
+      LEFT JOIN Personal_Infos p ON f.personid = p.id
+      LEFT JOIN School_Infos s ON f.schoolid = s.id
+      WHERE (
+        (:keyword = '' OR (
+          p.firstname LIKE :kw OR
+          p.lastname LIKE :kw OR
+          p.nickname LIKE :kw OR
+          s.schoolname LIKE :kw
+        )) AND
+        (:type = '' OR f.type = :type) AND
+        (f.informdate >= :isoDate)
+      )
+      ORDER BY f.informdate ASC
+      LIMIT :limit OFFSET :offset
+      `,
+      {
+        replacements: {
+          keyword,
+          kw: `%${keyword}%`,
+          type,
+          isoDate,
+          limit,
+          offset,
+        },
+        type: Sequelize.QueryTypes.SELECT,
+      }
+    );
+    const result = [];
+
+    query.forEach((item) => {
+      const [day, month, year] = ISO_to_Thai(item.informdate);
+
+      let yearGroup = result.find((g) => g.year === year);
+      if (!yearGroup) {
+        yearGroup = { year, person: [] };
+        result.push(yearGroup);
+      }
+      yearGroup.person.push(item);
+    });
+
+    return res.status(200).json({ items: result, page });
+  } catch (error) {
+    console.log("Error: ", error);
+    res.status(500).json({
+      message: "Error search",
+    });
+  }
+};
+
+exports.detail = async (req, res) => {
+  try {
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({ message: "Request body is missing" });
+    }
+    req.body = trimRequestBody(req.body);
+    const formid = req.body.formid;
+    const form = await Form.findOne({ where: { id: formid } });
+    if (!form) {
+      return res.status(404).json({
+        message: "ไม่พบฟอร์ม",
+      });
+    }
+    const person = await Personal.findOne({ where: { id: form.personid } });
+    if (!person) {
+      return res.status(404).json({
+        message: "ไม่พบข้อมูลผู้กรอก",
+      });
+    }
+    const school = await School.findOne({ where: { id: form.schoolid } });
+    if (!school) {
+      return res.status(404).json({
+        message: "ไม่พบข้อมูลผู้กรอกและโรงเรียน",
+      });
+    }
+    const welfare = await Welfare.findOne({
+      where: { personid: form.personid },
+    });
+    if (!welfare) {
+      return res.status(404).json({
+        message: "ไม่พบข้อมูลผู้รับสวัสดิการ",
+      });
+    }
+    const registerdate = ISO_to_Thai(form.informdate);
+    const birthdate = ISO_to_Thai(person.birthdate);
+    const maritalStatus = person.marital_status === true ? "married" : "single";
+    const data = {
+      docid: form.number,
+      RegisterDate: registerdate[0],
+      RegisterMonth: registerdate[1],
+      RegisterYear: registerdate[2],
+      titleName: person.prefix,
+      name: person.firstname,
+      lastname: person.lastname,
+      nickname: person.nickname,
+      age: person.age,
+      birthDate: birthdate[0],
+      birthMonth: birthdate[1],
+      birthYear: birthdate[2],
+      citizenId: person.idcard_number,
+      houseNumber: person.address[0],
+      housemoo: person.address[1],
+      houseSoi: person.address[2],
+      houseRoad: person.address[3],
+      houseSubdistric: person.address[4],
+      houseDistrict: person.address[5],
+      houseProvince: person.address[6],
+      mobilePhone: person.mobile_number,
+      housePhone: person.landline_number,
+      maritalStatus: maritalStatus,
+      titlespouseName: person.spouse_prefix,
+      spouseName: person.spouse_firstname,
+      spouseLastname: person.spouse_lastname,
+      spouseAge: person.spouse_age,
+      spousePhone: person.spouse_mobile_number,
+      welfareApplicantType: welfare.relation,
+      titlewelfareApplicantName: welfare.prefix,
+      welfareApplicantName: welfare.firstname,
+      welfareApplicantLastName: welfare.lastname,
+      teachStatus: school.position,
+      schoolName: school.schoolname,
+      schoolid: school.schooladdress[0],
+      schoolRoad: school.schooladdress[1],
+      schoolSubdistrict: school.address[2],
+      schoolDistrict: school.address[3],
+      schoolProvince: school.address[4],
+      examUnit: school.examunit,
+      educationDistrict: school.servicearea,
+      note: form.type,
+    };
+    return res.status(200).json({
+      info: data,
+    });
+  } catch (error) {
+    console.log("Error: ", error);
+    res.status(500).json({
+      message: "Error getting info",
+    });
+  }
+};
