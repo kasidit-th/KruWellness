@@ -11,7 +11,10 @@
 # production
 /build
 /database/*.sqlite
-/uploads/*
+/uploads/copy_form/*
+/uploads/copy_idcard/*
+/uploads/copy_teachercard/*
+/uploads/picture/*
 /exports/*
 .env
 
