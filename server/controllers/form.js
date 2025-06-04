@@ -579,7 +579,7 @@ exports.detail = async (req, res) => {
       : "none";
 
     const data = {
-      docid: form.number,
+      docId: form.number,
       RegisterDate: registerdate[0],
       RegisterMonth: registerdate[1],
       RegisterYear: registerdate[2],
