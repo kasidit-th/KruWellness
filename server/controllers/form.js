@@ -540,21 +540,21 @@ exports.detail = async (req, res) => {
       });
     }
     const person = await Personal.findOne({
-      where: { personid: form.personid },
+      where: { id: form.personid },
     });
     if (!person) {
       return res.status(404).json({
         message: "ไม่พบข้อมูลผู้กรอก",
       });
     }
-    const school = await School.findOne({ where: { schoolid: form.schoolid } });
+    const school = await School.findOne({ where: { id: form.schoolid } });
     if (!school) {
       return res.status(404).json({
         message: "ไม่พบข้อมูลผู้กรอกและโรงเรียน",
       });
     }
     const welfare = await Welfare.findOne({
-      where: { welfareid: form.welfareid },
+      where: { id: form.welfareid },
     });
     if (!welfare) {
       return res.status(404).json({
