@@ -67,13 +67,3 @@ exports.ISO_to_Thai = (isoString) => {
 
   return [day,month,thaiYear];
 };
-
-exports.checkCard = (isoDateString) => {
-  const inputDate = new Date(isoDateString);
-  const now = new Date();
-
-  const fourYearsLater = new Date(inputDate);
-  fourYearsLater.setFullYear(inputDate.getFullYear() + 4);
-
-  return now >= fourYearsLater;
-}

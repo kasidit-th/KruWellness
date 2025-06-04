@@ -10,15 +10,5 @@ const Welfare_Recipient = sequelize.define("Welfare_Info", {
   lastname: { type: DataTypes.STRING, allowNull: false },
 });
 
-Welfare_Recipient.associate = (models) => {
-  Welfare_Recipient.belongsTo(models.Personal_Info, {
-    foreignKey: "personid",
-    as: "welfare_owner",
-  });
-  Welfare_Recipient.belongsTo(models.Form, {
-    foreignKey: "welfareid",
-    as: "welfare_recipient",
-  });
-};
 
 module.exports = Welfare_Recipient;

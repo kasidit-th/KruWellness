@@ -23,15 +23,4 @@ const Personal_Info = sequelize.define("Personal_Info", {
   spouse_mobile_number: { type: DataTypes.INTEGER, allowNull: false },
 });
 
-Personal_Info.associate = (models) => {
-  Personal_Info.hasMany(models.Welfare_Recipient, {
-    foreignKey: "personid",
-    as: "welfareInfos",
-  });
-  Personal_Info.belongsTo(models.Form, {
-    foreignKey: "personid",
-    as: "form_informer",
-  });
-};
-
 module.exports = Personal_Info;

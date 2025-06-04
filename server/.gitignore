@@ -11,6 +11,9 @@
 # production
 /build
 /database/*.sqlite
+/uploads/*
+/exports/*
+.env
 
 # misc
 .DS_Store

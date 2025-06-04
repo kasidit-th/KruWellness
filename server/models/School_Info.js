@@ -9,11 +9,4 @@ const School_Info = sequelize.define("School_Info", {
   schooladdress: { type: DataTypes.JSON, allowNull: false },
 });
 
-School_Info.associate = (models) => {
-  School_Info.belongsTo(models.Form, {
-    foreignKey: "schoolid",
-    as: "school_info",
-  });
-};
-
 module.exports = School_Info;

@@ -37,9 +37,15 @@ const Form = sequelize.define("Form", {
 });
 
 Form.associate = (models) => {
-  Form.hasOne(models.Personal_Info, { foreignKey: "personid", as: "person" });
-  Form.hasOne(models.Welfare_Recipient, { foreignKey: "welfareid", as: "welfare" });
-  Form.hasOne(models.School_Info, { foreignKey: "schoolid", as: "school" });
+  Form.belongsTo(models.Personal_Info, {
+    foreignKey: "personid",
+    as: "informer",
+  });
+  Form.belongsTo(models.Welfare_Recipient, {
+    foreignKey: "welfareid",
+    as: "welfare",
+  });
+  Form.belongsTo(models.School_Info, { foreignKey: "schoolid", as: "school" });
 };
 
 module.exports = Form;

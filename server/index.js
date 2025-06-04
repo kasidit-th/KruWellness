@@ -4,6 +4,7 @@ const path = require("path");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const sequelizedb = require("./database/config.js");
+const { cleanup } = require("./tools/cleaner.js")
 const db = require("./models");
 const port = process.env.PORT || 5000;
 
@@ -11,6 +12,7 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 if (process.env.NODE_ENV === "production") {
   const clientBuildPath = path.join(__dirname, "../client/build");
@@ -30,6 +32,7 @@ const start = async () => {
     await sequelizedb.authenticate();
     console.log("Database connected...");
     await db.sequelize.sync();
+    cleanup();
     app.listen(port, () => {
       console.log("Server running on port:", port);
       console.log(`http://localhost:${port}`);

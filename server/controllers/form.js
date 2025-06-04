@@ -2,10 +2,10 @@ const Form = require("../models/Form.js");
 const Personal = require("../models/Personal_Info.js");
 const School = require("../models/School_Info.js");
 const Welfare = require("../models/Welfare_Recipient.js");
-const { Op } = require("sequelize");
 const sequelize = require("../database/config");
 const Sequelize = require("sequelize");
 const { Thai_to_ISO, ISO_to_Thai } = require("../tools/function.js");
+const { exportcsvxlsx } = require("../tools/exporter.js");
 require("dotenv").config();
 
 const maritalStatus = (status) => {
@@ -13,6 +13,7 @@ const maritalStatus = (status) => {
     return true;
   } else return false;
 };
+
 const trimRequestBody = (body) => {
   const trimmed = {};
   for (const key in body) {
@@ -50,12 +51,12 @@ exports.create = async (req, res) => {
         req.body.houseDistrict,
         req.body.houseProvince,
       ];
-      const personel_data = {
+      let personel_data = {
         prefix: req.body.titleName,
         firstname: req.body.name,
         lastname: req.body.lastname,
         nickname: req.body.nickname,
-        picture: req.files.picture,
+        picture: null,
         birthdate: birthdate,
         age: req.body.age,
         idcard_number: req.body.citizenId,
@@ -70,9 +71,13 @@ exports.create = async (req, res) => {
         spouse_age: req.body.spouseAge,
         spouse_mobile_number: req.body.spousePhone,
       };
+      if (req.teacherpicture) {
+        personel_data.picture = req.teacherpicture;
+      }
       const personal = await Personal.create(personel_data);
       req.personid = personal.id;
     } else req.personid = personDB.id;
+
     const schoolDB = await School.findOne({
       where: { schoolname: req.body.schoolName },
     });
@@ -94,41 +99,64 @@ exports.create = async (req, res) => {
       req.schoolid = school.id;
     } else req.schoolid = schoolDB.id;
 
-    const welfare_data = {
-      personid: req.personid,
-      relation: req.body.welfareApplicantType,
-      prefix: req.body.titlewelfareApplicantName,
-      firstname: req.body.welfareApplicantName,
-      lastname: req.body.welfareApplicantLastName,
-    };
-    const welfare = await Welfare.create(welfare_data);
+    const welfareDB = await Welfare.findOne({
+      where: {
+        firstname: req.body.welfareApplicantName,
+        lastname: req.body.welfareApplicantLastName,
+      },
+    });
+    if (!welfareDB) {
+      const welfare_data = {
+        personid: req.personid,
+        relation: req.body.welfareApplicantType,
+        prefix: req.body.titlewelfareApplicantName,
+        firstname: req.body.welfareApplicantName,
+        lastname: req.body.welfareApplicantLastName,
+      };
+      const welfare = await Welfare.create(welfare_data);
+      req.welfareid = welfare.id;
+    } else req.welfareid = welfareDB.id;
 
     const informdate = Thai_to_ISO(
       req.body.RegisterDate,
       req.body.RegisterMonth,
       req.body.RegisterYear
     );
+
     let form_data = {
       number: req.body.docId,
       informdate: informdate,
       personid: req.personid,
-      welfareid: welfare.id,
+      welfareid: req.welfareid,
       schoolid: req.schoolid,
       type: req.body.note,
-      copy_file: req.copy_form,
-      copy_idcard: req.copy_idcard,
-      copy_teachercard: req.copy_teachercard,
+      copy_form: null,
+      copy_idcard: null,
+      copy_teachercard: null,
     };
+
+    if (req.copy_form) {
+      form_data.copy_form = req.copy_form;
+    }
+
+    if (req.copy_idcard) {
+      form_data.copy_idcard = req.copy_idcard;
+    }
+
+    if (req.copy_teachercard) {
+      form_data.copy_teachercard = req.copy_teachercard;
+    }
+
     if (String(req.body.note) === "newCard") {
       const cardDB = await Form.findOne({
         where: { personid: req.personid, type: "continueCard" },
       });
-      if (cardDB.length === 0) {
+      if (!cardDB) {
         form_data.type = "continueCard";
-        await Form.create(form_data);
       }
     }
     await Form.create(form_data);
+    exportcsvxlsx();
     res.status(200).json({
       message: "Create form success",
     });
@@ -145,13 +173,23 @@ exports.update = async (req, res) => {
     if (!req.body || Object.keys(req.body).length === 0) {
       return res.status(400).json({ message: "Request body is missing" });
     }
-
     req.body = trimRequestBody(req.body);
-
     const formid = req.body.formid;
     const form = await Form.findOne({ where: { id: formid } });
     if (!form) {
       return res.status(404).json({ message: "Form not found" });
+    }
+
+    const personal = await Personal.findOne({
+      where: { id: form.personid },
+    });
+    const welfare = await Welfare.findOne({
+      where: { id: form.welfareid },
+    });
+    const school = await School.findOne({ where: { id: form.schoolid } });
+
+    if (!personal || !welfare || !school) {
+      return res.status(404).json({ message: "Related record not found" });
     }
 
     const birthdate = Thai_to_ISO(
@@ -179,22 +217,12 @@ exports.update = async (req, res) => {
       req.body.schoolProvince,
     ];
 
-    const personal = await Personal.findOne({ where: { id: form.personid } });
-    const welfare = await Welfare.findOne({
-      where: { personid: form.personid },
-    });
-    const school = await School.findOne({ where: { id: form.schoolid } });
-
-    if (!personal || !welfare || !school) {
-      return res.status(404).json({ message: "Related record not found" });
-    }
-
-    const personel_data = {
+    let personel_data = {
       prefix: req.body.titleName,
       firstname: req.body.name,
       lastname: req.body.lastname,
       nickname: req.body.nickname,
-      picture: req.files?.picture ?? null,
+      picture: personal.picture ?? null,
       birthdate,
       age: req.body.age,
       idcard_number: req.body.citizenId,
@@ -224,6 +252,22 @@ exports.update = async (req, res) => {
       schooladdress,
     };
 
+    if (req.teacherpicture) {
+      personel_data.picture = req.teacherpicture;
+    }
+
+    if (req.copy_form) {
+      form.copy_form = req.copy_form;
+    }
+
+    if (req.copy_idcard) {
+      form.copy_idcard = req.copy_idcard;
+    }
+
+    if (req.copy_teachercard) {
+      form.copy_teachercard = req.copy_teachercard;
+    }
+
     await Personal.update(personel_data, {
       where: { id: form.personid },
     });
@@ -233,7 +277,10 @@ exports.update = async (req, res) => {
     await School.update(school_data, {
       where: { id: form.schoolid },
     });
-
+    await Form.update(form, {
+      where: { id: form.id },
+    });
+    exportcsvxlsx();
     return res.status(200).json({ message: "Update form success" });
   } catch (error) {
     console.error("Error: ", error);
@@ -248,7 +295,7 @@ exports.search = async (req, res) => {
     }
     req.body = trimRequestBody(req.body);
     const keyword = req.body.keyword || "";
-    const page = parseInt(req.body.page) || 1; // default to page 1
+    const page = parseInt(req.body.page) || 1;
     const limit = 50;
     const offset = (page - 1) * limit;
     const type = req.body.type || "";
@@ -391,7 +438,7 @@ exports.searchmemberfee = async (req, res) => {
     req.body = trimRequestBody(req.body);
     const type = "continueMember";
     const keyword = req.body.keyword || "";
-    const page = parseInt(req.body.page) || 1; // default to page 1
+    const page = parseInt(req.body.page) || 1;
     const limit = 50;
     const offset = (page - 1) * limit;
     const fiveYearsAgo = new Date();
@@ -464,20 +511,22 @@ exports.detail = async (req, res) => {
         message: "ไม่พบฟอร์ม",
       });
     }
-    const person = await Personal.findOne({ where: { id: form.personid } });
+    const person = await Personal.findOne({
+      where: { personid: form.personid },
+    });
     if (!person) {
       return res.status(404).json({
         message: "ไม่พบข้อมูลผู้กรอก",
       });
     }
-    const school = await School.findOne({ where: { id: form.schoolid } });
+    const school = await School.findOne({ where: { schoolid: form.schoolid } });
     if (!school) {
       return res.status(404).json({
         message: "ไม่พบข้อมูลผู้กรอกและโรงเรียน",
       });
     }
     const welfare = await Welfare.findOne({
-      where: { personid: form.personid },
+      where: { welfareid: form.welfareid },
     });
     if (!welfare) {
       return res.status(404).json({
@@ -487,6 +536,20 @@ exports.detail = async (req, res) => {
     const registerdate = ISO_to_Thai(form.informdate);
     const birthdate = ISO_to_Thai(person.birthdate);
     const maritalStatus = person.marital_status === true ? "married" : "single";
+    const urlprefix = `http://${process.env.HOST}:${process.env.PORT}`;
+    const teacherPicture = person.picture
+      ? urlprefix + person.picture.replace(/\\/g, "/")
+      : "none";
+    const copyForm = form.copy_form
+      ? urlprefix + form.copy_form.replace(/\\/g, "/")
+      : "none";
+    const copyIdcard = form.copy_idcard
+      ? urlprefix + form.copy_idcard.replace(/\\/g, "/")
+      : "none";
+    const copyTeachercard = form.copy_teachercard
+      ? urlprefix + form.copy_teachercard.replace(/\\/g, "/")
+      : "none";
+
     const data = {
       docid: form.number,
       RegisterDate: registerdate[0],
@@ -496,6 +559,7 @@ exports.detail = async (req, res) => {
       name: person.firstname,
       lastname: person.lastname,
       nickname: person.nickname,
+      teacherPicture: teacherPicture,
       age: person.age,
       birthDate: birthdate[0],
       birthMonth: birthdate[1],
@@ -524,14 +588,18 @@ exports.detail = async (req, res) => {
       schoolName: school.schoolname,
       schoolid: school.schooladdress[0],
       schoolRoad: school.schooladdress[1],
-      schoolSubdistrict: school.address[2],
-      schoolDistrict: school.address[3],
-      schoolProvince: school.address[4],
+      schoolSubdistrict: school.schooladdress[2],
+      schoolDistrict: school.schooladdress[3],
+      schoolProvince: school.schooladdress[4],
       examUnit: school.examunit,
       educationDistrict: school.servicearea,
       note: form.type,
+      copyForm: copyForm,
+      copyIdcard: copyIdcard,
+      copyTeachercard: copyTeachercard,
     };
     return res.status(200).json({
+      formid: form.id,
       info: data,
     });
   } catch (error) {
