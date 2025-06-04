@@ -301,7 +301,7 @@ exports.search = async (req, res) => {
     const type = req.body.type || "";
     const query = await sequelize.query(
       `
-      SELECT f.*, p.firstname, p.lastname, s.schoolname
+      SELECT f.*, p.firstname, p.lastname, p.nickname, p.idcard_number, p.picture, s.schoolname
       FROM Forms f
       LEFT JOIN Personal_Infos p ON f.personid = p.id
       LEFT JOIN School_Infos s ON f.schoolid = s.id
@@ -330,6 +330,7 @@ exports.search = async (req, res) => {
     );
     let result = [];
     let schoolname = [];
+    const urlprefix = `http://${process.env.HOST}:${process.env.PORT}`;
     query.map((item) => {
       if (!schoolname.includes(item.schoolname)) {
         schoolname.push(item.schoolname);
@@ -344,7 +345,16 @@ exports.search = async (req, res) => {
       let temp = [];
       query.map((item) => {
         if (item.schoolname === school) {
-          temp.push(item);
+          const teacherPicture = item.picture
+            ? urlprefix + item.picture.replace(/\\/g, "/")
+            : "none";
+          temp.push({
+            id: item.id,
+            image: teacherPicture,
+            name: item.firstname + " " + item.lastname,
+            nickname: item.nickname,
+            idcard: item.idcard_number,
+          });
         }
       });
       object.person = temp;
@@ -376,7 +386,7 @@ exports.searchcardexpire = async (req, res) => {
 
     const query = await sequelize.query(
       `
-      SELECT f.*, p.firstname, p.lastname, s.schoolname
+      SELECT f.*, p.firstname, p.lastname, p.nickname, p.idcard_number, p.picture, s.schoolname
       FROM Forms f
       LEFT JOIN Personal_Infos p ON f.personid = p.id
       LEFT JOIN School_Infos s ON f.schoolid = s.id
@@ -407,7 +417,7 @@ exports.searchcardexpire = async (req, res) => {
     );
 
     const result = [];
-
+    const urlprefix = `http://${process.env.HOST}:${process.env.PORT}`;
     query.forEach((item) => {
       const [day, month, year] = ISO_to_Thai(item.informdate);
 
@@ -422,7 +432,16 @@ exports.searchcardexpire = async (req, res) => {
         monthGroup = { month, person: [] };
         yearGroup.months.push(monthGroup);
       }
-      monthGroup.person.push(item);
+      const teacherPicture = item.picture
+        ? urlprefix + item.picture.replace(/\\/g, "/")
+        : "none";
+      monthGroup.person.push({
+        id: item.id,
+        image: teacherPicture,
+        name: item.firstname + " " + item.lastname,
+        nickname: item.nickname,
+        idcard: item.idcard_number,
+      });
     });
     return res.status(200).json({ items: result, page });
   } catch (error) {
@@ -447,7 +466,7 @@ exports.searchmemberfee = async (req, res) => {
 
     const query = await sequelize.query(
       `
-      SELECT f.*, p.firstname, p.lastname, s.schoolname
+      SELECT f.*, p.firstname, p.lastname, p.nickname, p.idcard_number, p.picture, s.schoolname
       FROM Forms f
       LEFT JOIN Personal_Infos p ON f.personid = p.id
       LEFT JOIN School_Infos s ON f.schoolid = s.id
@@ -477,7 +496,7 @@ exports.searchmemberfee = async (req, res) => {
       }
     );
     const result = [];
-
+    const urlprefix = `http://${process.env.HOST}:${process.env.PORT}`;
     query.forEach((item) => {
       const [day, month, year] = ISO_to_Thai(item.informdate);
 
@@ -486,7 +505,16 @@ exports.searchmemberfee = async (req, res) => {
         yearGroup = { year, person: [] };
         result.push(yearGroup);
       }
-      yearGroup.person.push(item);
+      const teacherPicture = item.picture
+        ? urlprefix + item.picture.replace(/\\/g, "/")
+        : "none";
+      yearGroup.person.push({
+        id: item.id,
+        image: teacherPicture,
+        name: item.firstname + " " + item.lastname,
+        nickname: item.nickname,
+        idcard: item.idcard_number,
+      });
     });
 
     return res.status(200).json({ items: result, page });
