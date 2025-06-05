@@ -315,7 +315,7 @@ exports.update = async (req, res) => {
       where: { id: form.id },
     });
     exportcsvxlsx();
-    return res.status(200).json({ message: "Update form success" });
+    return res.status(200).json({ items: form.id,message: "Update form success" });
   } catch (error) {
     console.error("Error: ", error);
     res.status(500).json({ message: "Error update form" });
