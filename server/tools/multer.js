@@ -9,6 +9,11 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     try {
       let folder = "";
+
+      if (!file || !file.fieldname) {
+        return cb(new Error("❌ File or fieldname is missing."));
+      }
+
       switch (file.fieldname) {
         case "teacherPicture":
           folder = path.join(__dirname, "../uploads/picture/");
@@ -23,9 +28,7 @@ const storage = multer.diskStorage({
           folder = path.join(__dirname, "../uploads/copy_teachercard/");
           break;
         default:
-          return res.status(400).json({
-            message: `❌ LIMIT_UNEXPECTED_FILE ${file.fieldname}.`,
-          });
+          return cb(new Error(`❌ LIMIT_UNEXPECTED_FILE: ${file.fieldname}.`));
       }
 
       fs.mkdirSync(folder, { recursive: true });
@@ -36,34 +39,43 @@ const storage = multer.diskStorage({
   },
 
   filename: (req, file, cb) => {
-    const fileExt = path.extname(file.originalname).toLowerCase();
-    if (!allowedFileTypes.includes(fileExt)) {
-      return res.status(400).json({
-        message: `❌ Invalid file type for ${file.fieldname}. Allowed: JPG, JPEG, PNG.`,
-      });
+    try {
+      if (!file || !file.fieldname) {
+        return cb(new Error("❌ File or fieldname is missing."));
+      }
+
+      const fileExt = path.extname(file.originalname).toLowerCase();
+
+      if (!allowedFileTypes.includes(fileExt)) {
+        return cb(new Error(`❌ Invalid file type for ${file.fieldname}. Allowed: JPG, JPEG, PNG.`));
+      }
+
+      const filename = file_idgenerate() + fileExt;
+
+      // Attach paths to request object for later use
+      switch (file.fieldname) {
+        case "teacherPicture":
+          req.teacherpicture = `/uploads/picture/${filename}`;
+          break;
+        case "copyForm":
+          req.copy_form = `/uploads/copy_form/${filename}`;
+          break;
+        case "copyIdcard":
+          req.copy_idcard = `/uploads/copy_idcard/${filename}`;
+          break;
+        case "copyTeachercard":
+          req.copy_teachercard = `/uploads/copy_teachercard/${filename}`;
+          break;
+      }
+
+      cb(null, filename);
+    } catch (error) {
+      cb(error);
     }
-
-    const filename = file_idgenerate() + fileExt;
-
-    switch (file.fieldname) {
-      case "teacherPicture":
-        req.teacherpicture = `/uploads/picture/${filename}`;
-        break;
-      case "copyForm":
-        req.copy_form = `/uploads/copy_form/${filename}`;
-        break;
-      case "copyIdcard":
-        req.copy_idcard = `/uploads/copy_idcard/${filename}`;
-        break;
-      case "copyTeachercard":
-        req.copy_teachercard = `/uploads/copy_teachercard/${filename}`;
-        break;
-    }
-
-    cb(null, filename);
   },
 });
 
+// Multer upload configuration
 exports.uploadAllFiles = multer({ storage }).fields([
   { name: "teacherPicture", maxCount: 1 },
   { name: "copyForm", maxCount: 1 },
