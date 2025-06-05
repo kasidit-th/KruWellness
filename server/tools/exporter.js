@@ -96,6 +96,7 @@ exports.exportcsvxlsx = async () => {
               }
 
               const columnMap = columnMappings[tableName] || {};
+              const absolutePath = path.join(ROOT_DIR, row[key] || "");
               const transformedRows = rows.map((row) => {
                 const newRow = {};
 
@@ -132,7 +133,6 @@ exports.exportcsvxlsx = async () => {
                       "copy_teachercard",
                     ].includes(key)
                   ) {
-                    const absolutePath = path.join(ROOT_DIR, row[key] || "");
                     newRow[newKey] = absolutePath.replace(/\//g, "\\"); // Windows-style
                   } else if (["relation"].includes(key)) {
                     const relation = row[key];

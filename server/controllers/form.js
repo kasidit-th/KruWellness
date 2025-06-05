@@ -4,6 +4,7 @@ const School = require("../models/School_Info.js");
 const Welfare = require("../models/Welfare_Recipient.js");
 const sequelize = require("../database/config");
 const Sequelize = require("sequelize");
+const { cleanup } = require("../tools/cleaner.js");
 const { Thai_to_ISO, ISO_to_Thai } = require("../tools/function.js");
 const { exportcsvxlsx } = require("../tools/exporter.js");
 const { Faker, th, en } = require("@faker-js/faker");
@@ -809,7 +810,7 @@ exports.clearall = async (req, res) => {
     await sequelize.query("DELETE FROM Personal_Infos;");
     await sequelize.query("DELETE FROM School_Infos;");
     await sequelize.query("PRAGMA foreign_keys = ON;");
-
+    cleanup();
     res.status(200).json({ message: "🧹 ล้างข้อมูลทั้งหมดเรียบร้อยแล้ว" });
   } catch (error) {
     console.error("Error: ", error);
