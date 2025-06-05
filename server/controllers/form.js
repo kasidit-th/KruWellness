@@ -51,7 +51,7 @@ exports.create = async (req, res) => {
         req.body.housemoo,
         req.body.houseSoi,
         req.body.houseRoad,
-        req.body.houseSubdistric,
+        req.body.houseSubdistrict,
         req.body.houseDistrict,
         req.body.houseProvince,
       ].join(",");
@@ -221,7 +221,7 @@ exports.update = async (req, res) => {
       req.body.housemoo,
       req.body.houseSoi,
       req.body.houseRoad,
-      req.body.houseSubdistric,
+      req.body.houseSubdistrict,
       req.body.houseDistrict,
       req.body.houseProvince,
     ].join(",");
@@ -468,7 +468,7 @@ exports.searchcardexpire = async (req, res) => {
         monthGroup = { year, month, person: [] };
         result.push(monthGroup);
       }
-      
+
       const teacherPicture = item.picture
         ? urlprefix + item.picture.replace(/\\/g, "/")
         : "none";
@@ -635,7 +635,7 @@ exports.detail = async (req, res) => {
       housemoo: person.address[1],
       houseSoi: person.address[2],
       houseRoad: person.address[3],
-      houseSubdistric: person.address[4],
+      houseSubdistrict: person.address[4],
       houseDistrict: person.address[5],
       houseProvince: person.address[6],
       mobilePhone: person.mobile_number,
