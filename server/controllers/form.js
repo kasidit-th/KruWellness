@@ -733,7 +733,10 @@ exports.createDummyData = async (req, res) => {
         birthdate,
         age,
         idcard_number: faker.string.numeric(13),
-        schoolposition: faker.person.jobTitle(),
+        schoolposition: faker.helpers.arrayElement([
+          "teacher",
+          "manager",
+        ]),
         mobile_number: "08" + faker.string.numeric(8),
         landline_number: "02" + faker.string.numeric(7),
         address: ["กรุงเทพ", "ดุสิต", "วชิรพยาบาล", "10300"],
@@ -749,7 +752,8 @@ exports.createDummyData = async (req, res) => {
         personid: person.id,
         relation: faker.helpers.arrayElement([
           "child",
-          "spouse",
+          "husband",
+          "wife",
           "father",
           "mother",
         ]),
