@@ -13,7 +13,7 @@ const Personal_Info = sequelize.define("Personal_Info", {
   idcard_number: { type: DataTypes.INTEGER, allowNull: false },
   schoolposition: { type: DataTypes.STRING, allowNull: false },
   mobile_number: { type: DataTypes.INTEGER, allowNull: false },
-  landline_number: { type: DataTypes.INTEGER, allowNull: false },
+  landline_number: { type: DataTypes.INTEGER},
   address: { type: DataTypes.JSON, allowNull: false },
   marital_status: { type: DataTypes.BOOLEAN, allowNull: false },
   spouse_prefix: { type: DataTypes.STRING, allowNull: false },

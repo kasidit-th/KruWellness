@@ -165,9 +165,10 @@ exports.create = async (req, res) => {
         form_data.type = "continueCard";
       }
     }
-    await Form.create(form_data);
+    const form = await Form.create(form_data);
     exportcsvxlsx();
     res.status(200).json({
+      items: form.id,
       message: "Create form success",
     });
   } catch (error) {
