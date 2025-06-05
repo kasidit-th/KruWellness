@@ -197,6 +197,13 @@ exports.update = async (req, res) => {
       req.body.birthMonth,
       req.body.birthYear
     );
+
+    const informdate = Thai_to_ISO(
+      req.body.RegisterDate,
+      req.body.RegisterMonth,
+      req.body.RegisterYear
+    );
+
     const marital_status = maritalStatus(req.body.maritalStatus);
 
     const address = [
@@ -252,6 +259,18 @@ exports.update = async (req, res) => {
       schooladdress,
     };
 
+    let form_data = {
+      number: req.body.docId,
+      informdate: informdate,
+      personid: req.personid,
+      welfareid: req.welfareid,
+      schoolid: req.schoolid,
+      type: req.body.note,
+      copy_form: null,
+      copy_idcard: null,
+      copy_teachercard: null,
+    };
+
     if (req.teacherpicture) {
       personel_data.picture = req.teacherpicture;
     }
@@ -277,7 +296,7 @@ exports.update = async (req, res) => {
     await School.update(school_data, {
       where: { id: form.schoolid },
     });
-    await Form.update(form, {
+    await Form.update(form_data, {
       where: { id: form.id },
     });
     exportcsvxlsx();
@@ -310,6 +329,7 @@ exports.search = async (req, res) => {
           p.firstname LIKE :kw OR
           p.lastname LIKE :kw OR
           p.nickname LIKE :kw OR
+          p.idcard_number LIKE :kw OR
           s.schoolname LIKE :kw
         )) AND
         (:type = '' OR f.type = :type)
@@ -395,6 +415,7 @@ exports.searchcardexpire = async (req, res) => {
           p.firstname LIKE :kw OR
           p.lastname LIKE :kw OR
           p.nickname LIKE :kw OR
+          p.idcard_number LIKE :kw OR
           s.schoolname LIKE :kw
         )) AND
         (:type = '' OR f.type = :type) AND
@@ -447,7 +468,7 @@ exports.searchcardexpire = async (req, res) => {
   } catch (error) {
     console.error("Error: ", error);
     res.status(500).json({
-      message: "Error search",
+      message: "Error during search",
     });
   }
 };
@@ -475,6 +496,7 @@ exports.searchmemberfee = async (req, res) => {
           p.firstname LIKE :kw OR
           p.lastname LIKE :kw OR
           p.nickname LIKE :kw OR
+          p.idcard_number LIKE :kw OR
           s.schoolname LIKE :kw
         )) AND
         (:type = '' OR f.type = :type) AND
@@ -521,7 +543,7 @@ exports.searchmemberfee = async (req, res) => {
   } catch (error) {
     console.log("Error: ", error);
     res.status(500).json({
-      message: "Error search",
+      message: "Error during search",
     });
   }
 };
@@ -634,6 +656,39 @@ exports.detail = async (req, res) => {
     console.log("Error: ", error);
     res.status(500).json({
       message: "Error getting info",
+    });
+  }
+};
+
+exports.delete = async (req,res) => {
+  try {
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({ message: "Request body is missing" });
+    }
+    req.body = trimRequestBody(req.body);
+    const formid = req.body.formid;
+    const form = await Form.findOne({ where: { id: formid } });
+    if (!form) {
+      return res.status(404).json({
+        message: "ไม่พบฟอร์ม",
+      });
+    }
+    const person = await Personal.findOne({
+      where: { id: form.personid },
+    });
+    if (!person) {
+      return res.status(404).json({
+        message: "ไม่พบข้อมูลผู้กรอก",
+      });
+    }
+
+    await Form.destroy({ where: { id: formid } });
+
+    return res.status(200).json({ message: "ลบข้อมูลเรียบร้อยแล้ว" });
+  } catch (error) {
+    console.log("Error: ", error);
+    res.status(500).json({
+      message: "Error delete",
     });
   }
 };
