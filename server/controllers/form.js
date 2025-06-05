@@ -279,15 +279,15 @@ exports.update = async (req, res) => {
     }
 
     if (req.copy_form) {
-      form.copy_form = req.copy_form;
+      form_data.copy_form = req.copy_form;
     }
 
     if (req.copy_idcard) {
-      form.copy_idcard = req.copy_idcard;
+      form_data.copy_idcard = req.copy_idcard;
     }
 
     if (req.copy_teachercard) {
-      form.copy_teachercard = req.copy_teachercard;
+      form_data.copy_teachercard = req.copy_teachercard;
     }
 
     await Personal.update(personel_data, {
