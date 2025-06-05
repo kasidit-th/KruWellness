@@ -23,7 +23,9 @@ const storage = multer.diskStorage({
           folder = path.join(__dirname, "../uploads/copy_teachercard/");
           break;
         default:
-          return cb(new multer.MulterError("LIMIT_UNEXPECTED_FILE", file.fieldname));
+          return res.status(400).json({
+            message: `❌ LIMIT_UNEXPECTED_FILE ${file.fieldname}.`,
+          });
       }
 
       fs.mkdirSync(folder, { recursive: true });
@@ -36,7 +38,9 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     const fileExt = path.extname(file.originalname).toLowerCase();
     if (!allowedFileTypes.includes(fileExt)) {
-      return cb(new Error(`❌ Invalid file type for ${file.fieldname}. Allowed: JPG, JPEG, PNG.`));
+      return res.status(400).json({
+        message: `❌ Invalid file type for ${file.fieldname}. Allowed: JPG, JPEG, PNG.`,
+      });
     }
 
     const filename = file_idgenerate() + fileExt;

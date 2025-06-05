@@ -637,7 +637,7 @@ exports.detail = async (req, res) => {
       titlewelfareApplicantName: welfare.prefix,
       welfareApplicantName: welfare.firstname,
       welfareApplicantLastName: welfare.lastname,
-      teachStatus: school.position,
+      teachStatus: person.schoolposition,
       schoolName: school.schoolname,
       schoolid: school.schooladdress[0],
       schoolRoad: school.schooladdress[1],
@@ -771,7 +771,7 @@ exports.createDummyData = async (req, res) => {
         type: faker.helpers.arrayElement([
           "newCard",
           "continueCard",
-          "memberCard",
+          "continueMember",
         ]),
       });
 

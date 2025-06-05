@@ -134,6 +134,37 @@ exports.exportcsvxlsx = async () => {
                   ) {
                     const absolutePath = path.join(ROOT_DIR, row[key] || "");
                     newRow[newKey] = absolutePath.replace(/\//g, "\\"); // Windows-style
+                  } else if (["relation"].includes(key)) {
+                    const relation = row[key];
+                    switch (relation) {
+                      case "child":
+                        newRow[newKey] = "ลูก";
+                        break;
+                      case "husband":
+                        newRow[newKey] = "สามี";
+                        break;
+                      case "wife":
+                        newRow[newKey] = "ภรรยา";
+                        break;
+                      case "nephew":
+                        newRow[newKey] = "หลานชาย";
+                        break;
+                      case "niece":
+                        newRow[newKey] = "หลานสาว";
+                        break;
+                      case "grandchild":
+                        newRow[newKey] = "หลาน";
+                        break;
+                      case "uncle":
+                        newRow[newKey] = "ลุง";
+                        break;
+                      case "aunt":
+                        newRow[newKey] = "ป้า";
+                        break;
+                      default:
+                        newRow[newKey] = row[key];
+                    }
+                    newRow[newKey] = absolutePath.replace(/\//g, "\\"); // Windows-style
                   } else {
                     newRow[newKey] = row[key];
                   }
