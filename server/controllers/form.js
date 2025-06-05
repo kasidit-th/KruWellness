@@ -6,6 +6,9 @@ const sequelize = require("../database/config");
 const Sequelize = require("sequelize");
 const { Thai_to_ISO, ISO_to_Thai } = require("../tools/function.js");
 const { exportcsvxlsx } = require("../tools/exporter.js");
+const { Faker, th, en } = require("@faker-js/faker");
+const faker = new Faker({ locale: [th, en] });
+const db = require("../models");
 require("dotenv").config();
 
 const maritalStatus = (status) => {
@@ -315,7 +318,7 @@ exports.search = async (req, res) => {
     req.body = trimRequestBody(req.body);
     const keyword = req.body.keyword || "";
     const page = parseInt(req.body.page) || 1;
-    const limit = 50;
+    const limit = 200;
     const offset = (page - 1) * limit;
     const type = req.body.type || "";
     const query = await sequelize.query(
@@ -397,7 +400,7 @@ exports.searchcardexpire = async (req, res) => {
     const type = "continueCard";
     const keyword = req.body.keyword || "";
     const page = parseInt(req.body.page) || 1;
-    const limit = 50;
+    const limit = 200;
     const offset = (page - 1) * limit;
 
     const fiveYearsAgo = new Date();
@@ -479,7 +482,7 @@ exports.searchmemberfee = async (req, res) => {
     const type = "continueMember";
     const keyword = req.body.keyword || "";
     const page = parseInt(req.body.page) || 1;
-    const limit = 50;
+    const limit = 200;
     const offset = (page - 1) * limit;
     const fiveYearsAgo = new Date();
     fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5);
@@ -660,7 +663,7 @@ exports.detail = async (req, res) => {
   }
 };
 
-exports.delete = async (req,res) => {
+exports.delete = async (req, res) => {
   try {
     if (!req.body || Object.keys(req.body).length === 0) {
       return res.status(400).json({ message: "Request body is missing" });
@@ -690,5 +693,122 @@ exports.delete = async (req,res) => {
     res.status(500).json({
       message: "Error delete",
     });
+  }
+};
+
+exports.createDummyData = async (req, res) => {
+  try {
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({ message: "Request body is missing" });
+    }
+    req.body = trimRequestBody(req.body);
+    const amount = req.body.amount;
+
+    await db.sequelize.sync();
+    const schools = [];
+    for (let i = 0; i < 5; i++) {
+      const school = await db.School_Info.create({
+        schoolname: `โรงเรียนตัวอย่าง ${i + 1}`,
+        servicearea: "เขตพื้นที่ A",
+        examunit: "เขตสอบ B",
+        schooladdress: ["กรุงเทพ", "เขตตัวอย่าง", "แขวงตัวอย่าง", "10200"],
+      });
+      schools.push(school);
+    }
+
+    for (let i = 0; i < amount; i++) {
+      const birthdateDate = faker.date.between({
+        from: new Date("1970-01-01"),
+        to: new Date("2005-01-01"),
+      });
+      const birthdate = birthdateDate.toISOString().split("T")[0];
+      const age = new Date().getFullYear() - birthdateDate.getFullYear();
+
+      const person = await db.Personal_Info.create({
+        prefix: faker.person.prefix(),
+        firstname: faker.person.firstName(),
+        lastname: faker.person.lastName(),
+        nickname: faker.string.alpha({ length: 2 }),
+        picture: "",
+        birthdate,
+        age,
+        idcard_number: faker.string.numeric(13),
+        schoolposition: faker.person.jobTitle(),
+        mobile_number: "08" + faker.string.numeric(8),
+        landline_number: "02" + faker.string.numeric(7),
+        address: ["กรุงเทพ", "ดุสิต", "วชิรพยาบาล", "10300"],
+        marital_status: faker.number.int({ min: 0, max: 2 }),
+        spouse_prefix: faker.person.prefix(),
+        spouse_firstname: faker.person.firstName(),
+        spouse_lastname: faker.person.lastName(),
+        spouse_age: faker.number.int({ min: 30, max: 60 }),
+        spouse_mobile_number: "08" + faker.string.numeric(8),
+      });
+
+      const welfare = await db.Welfare_Recipient.create({
+        personid: person.id,
+        relation: faker.helpers.arrayElement([
+          "child",
+          "spouse",
+          "father",
+          "mother",
+        ]),
+        prefix: faker.person.prefix(),
+        firstname: faker.person.firstName(),
+        lastname: faker.person.lastName(),
+      });
+
+      await db.Form.create({
+        number: Number(
+          Array.from({ length: 5 }, () =>
+            faker.number.int({ min: 1, max: 9 })
+          ).join("")
+        ),
+        informdate: faker.date.recent({ days: 30 }).toISOString().split("T")[0],
+        personid: person.id,
+        welfareid: welfare.id,
+        schoolid: faker.helpers.arrayElement(schools).id,
+        type: faker.helpers.arrayElement([
+          "newCard",
+          "continueCard",
+          "memberCard",
+        ]),
+      });
+
+      console.log(`✅ เพิ่มข้อมูลคนที่ ${i + 1}`);
+    }
+
+    console.log(`🎉 เพิ่มข้อมูล dummy ครบ ${amount} คนเรียบร้อยแล้ว`);
+
+    if (res) {
+      return res
+        .status(200)
+        .json({ message: `เพิ่มข้อมูล dummy ครบ ${amount} เรียบร้อยแล้ว` });
+    } else {
+      process.exit();
+    }
+  } catch (error) {
+    console.log("Error: ", error);
+    if (res) {
+      return res.status(500).json({ message: "❌ เพิ่มข้อมูลล้มเหลว", error });
+    } else {
+      process.exit(1);
+    }
+  }
+};
+
+exports.clearall = async (req, res) => {
+  try {
+    await sequelize.query("PRAGMA foreign_keys = OFF;");
+    await sequelize.query("DELETE FROM Forms;");
+    await sequelize.query("DELETE FROM Welfare_Infos;");
+    await sequelize.query("DELETE FROM Personal_Infos;");
+    await sequelize.query("DELETE FROM School_Infos;");
+    await sequelize.query("PRAGMA foreign_keys = ON;");
+
+    res.status(200).json({ message: "🧹 ล้างข้อมูลทั้งหมดเรียบร้อยแล้ว" });
+  } catch (error) {
+    console.error("Error: ", error);
+    res.status(500).json({ message: "❌ ลบข้อมูลล้มเหลว", error });
   }
 };

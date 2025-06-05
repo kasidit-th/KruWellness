@@ -12,5 +12,7 @@ router.post('/api/detail',multer().none(),form.detail);
 router.post('/api/search/cardexpire',multer().none(),form.searchcardexpire);
 router.post('/api/search/memberfee',multer().none(),form.searchmemberfee);
 router.post('/api/delete',multer().none(),form.delete);
+router.post('/api/createdummy',multer().none(),form.createDummyData);
+router.delete('/api/clearall',form.clearall);
 
 module.exports = router;

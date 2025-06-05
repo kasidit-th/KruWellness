@@ -4,7 +4,7 @@ const path = require("path");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const sequelizedb = require("./database/config.js");
-const { cleanup } = require("./tools/cleaner.js")
+const { cleanup } = require("./tools/cleaner.js");
 const db = require("./models");
 const port = process.env.PORT || 5000;
 
