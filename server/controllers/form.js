@@ -281,9 +281,9 @@ exports.update = async (req, res) => {
       welfareid: req.welfareid,
       schoolid: req.schoolid,
       type: req.body.note,
-      copy_form: null,
-      copy_idcard: null,
-      copy_teachercard: null,
+      copy_form: form.copy_form ?? null,
+      copy_idcard: form.copy_idcard ?? null,
+      copy_teachercard: form.copy_teachercard ?? null,
     };
 
     if (req.teacherpicture) {

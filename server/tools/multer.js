@@ -47,24 +47,35 @@ const storage = multer.diskStorage({
       const fileExt = path.extname(file.originalname).toLowerCase();
 
       if (!allowedFileTypes.includes(fileExt)) {
-        return cb(new Error(`❌ Invalid file type for ${file.fieldname}. Allowed: JPG, JPEG, PNG.`));
+        return cb(
+          new Error(
+            `❌ Invalid file type for ${file.fieldname}. Allowed: JPG, JPEG, PNG.`
+          )
+        );
       }
 
       const filename = file_idgenerate() + fileExt;
 
-      // Attach paths to request object for later use
       switch (file.fieldname) {
         case "teacherPicture":
-          req.teacherpicture = `/uploads/picture/${filename}`;
+          if (typeof req.body.teacherPicture === String) {
+            break;
+          } else req.teacherpicture = `/uploads/picture/${filename}`;
           break;
         case "copyForm":
-          req.copy_form = `/uploads/copy_form/${filename}`;
+          if (typeof req.body.copyForm === String) {
+            break;
+          } else req.copy_form = `/uploads/copy_form/${filename}`;
           break;
         case "copyIdcard":
-          req.copy_idcard = `/uploads/copy_idcard/${filename}`;
+          if (typeof req.body.copyIdcard === String) {
+            break;
+          } else req.copy_idcard = `/uploads/copy_idcard/${filename}`;
           break;
         case "copyTeachercard":
-          req.copy_teachercard = `/uploads/copy_teachercard/${filename}`;
+          if (typeof req.body.copyTeachercard === String) {
+            break;
+          } else req.copy_teachercard = `/uploads/copy_teachercard/${filename}`;
           break;
       }
 
@@ -75,7 +86,6 @@ const storage = multer.diskStorage({
   },
 });
 
-// Multer upload configuration
 exports.uploadAllFiles = multer({ storage }).fields([
   { name: "teacherPicture", maxCount: 1 },
   { name: "copyForm", maxCount: 1 },
