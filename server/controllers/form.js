@@ -56,7 +56,7 @@ exports.create = async (req, res) => {
         req.body.houseProvince,
       ].join(",");
 
-    const address = stringaddress.split(",");
+      const address = stringaddress.split(",");
 
       let personel_data = {
         prefix: req.body.titleName,
@@ -97,7 +97,7 @@ exports.create = async (req, res) => {
         req.body.schoolProvince,
       ].join(",");
 
-    const schooladdress = stringschooladdress.split(",");
+      const schooladdress = stringschooladdress.split(",");
 
       const school_data = {
         schoolname: req.body.schoolName,
@@ -452,21 +452,23 @@ exports.searchcardexpire = async (req, res) => {
     );
 
     const result = [];
+    const years = [];
     const urlprefix = `http://${process.env.HOST}:${process.env.PORT}`;
     query.forEach((item) => {
       const [day, month, year] = ISO_to_Thai(item.informdate);
 
-      let yearGroup = result.find((g) => g.year === year);
+      let yearGroup = years.find((g) => g.year === year);
       if (!yearGroup) {
         yearGroup = { year, months: [] };
-        result.push(yearGroup);
+        years.push(yearGroup);
       }
 
-      let monthGroup = yearGroup.months.find((m) => m.month === month);
+      let monthGroup = result.find((m) => m.month === month);
       if (!monthGroup) {
-        monthGroup = { month, person: [] };
-        yearGroup.months.push(monthGroup);
+        monthGroup = { year, month, person: [] };
+        result.push(monthGroup);
       }
+      
       const teacherPicture = item.picture
         ? urlprefix + item.picture.replace(/\\/g, "/")
         : "none";
@@ -744,10 +746,7 @@ exports.createDummyData = async (req, res) => {
         birthdate,
         age,
         idcard_number: faker.string.numeric(13),
-        schoolposition: faker.helpers.arrayElement([
-          "teacher",
-          "manager",
-        ]),
+        schoolposition: faker.helpers.arrayElement(["teacher", "manager"]),
         mobile_number: "08" + faker.string.numeric(8),
         landline_number: "02" + faker.string.numeric(7),
         address: ["กรุงเทพ", "ดุสิต", "วชิรพยาบาล", "10300"],
