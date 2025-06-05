@@ -46,7 +46,7 @@ exports.create = async (req, res) => {
         req.body.birthYear
       );
       const marital_status = maritalStatus(req.body.maritalStatus);
-      const address = [
+      const stringaddress = [
         req.body.houseNumber,
         req.body.housemoo,
         req.body.houseSoi,
@@ -54,7 +54,10 @@ exports.create = async (req, res) => {
         req.body.houseSubdistric,
         req.body.houseDistrict,
         req.body.houseProvince,
-      ];
+      ].join(",");
+
+    const address = stringaddress.split(",");
+
       let personel_data = {
         prefix: req.body.titleName,
         firstname: req.body.name,
@@ -86,13 +89,16 @@ exports.create = async (req, res) => {
       where: { schoolname: req.body.schoolName },
     });
     if (!schoolDB) {
-      const schooladdress = [
+      const stringschooladdress = [
         req.body.schoolName,
         req.body.schoolRoad,
         req.body.schoolSubdistrict,
         req.body.schoolDistrict,
         req.body.schoolProvince,
-      ];
+      ].join(",");
+
+    const schooladdress = stringschooladdress.split(",");
+
       const school_data = {
         schoolname: req.body.schoolName,
         servicearea: req.body.educationDistrict,
@@ -210,7 +216,7 @@ exports.update = async (req, res) => {
 
     const marital_status = maritalStatus(req.body.maritalStatus);
 
-    const address = [
+    const stringaddress = [
       req.body.houseNumber,
       req.body.housemoo,
       req.body.houseSoi,
@@ -218,15 +224,19 @@ exports.update = async (req, res) => {
       req.body.houseSubdistric,
       req.body.houseDistrict,
       req.body.houseProvince,
-    ];
+    ].join(",");
 
-    const schooladdress = [
+    const address = stringaddress.split(",");
+
+    const stringschooladdress = [
       req.body.schoolName,
       req.body.schoolRoad,
       req.body.schoolSubdistrict,
       req.body.schoolDistrict,
       req.body.schoolProvince,
-    ];
+    ].join(",");
+
+    const schooladdress = stringschooladdress.split(",");
 
     let personel_data = {
       prefix: req.body.titleName,
