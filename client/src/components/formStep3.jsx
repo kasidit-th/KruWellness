@@ -45,12 +45,12 @@ const formStep3 = ({ val, handleChange, handleValueChange }) => (
         />
       </div>
       <div>
-        <label htmlFor="schoolId">เลขที่</label>
+        <label htmlFor="schoolid">เลขที่</label>
         <input
           type="text"
           placeholder=""
-          value={val.schoolId || ""}
-          onChange={handleChange("schoolId")}
+          value={val.schoolid || ""}
+          onChange={handleChange("schoolid")}
         />
       </div>
 
@@ -129,8 +129,8 @@ const formStep3 = ({ val, handleChange, handleValueChange }) => (
           <input
             type="radio"
             name="note"
-            value="renewalCard"
-            checked={val.note === "renewalCard"}
+            value="continueCard"
+            checked={val.note === "continueCard"}
             onChange={handleChange("note")}
           />
           <span>ขอต่ออายุบัตร</span>
@@ -139,8 +139,8 @@ const formStep3 = ({ val, handleChange, handleValueChange }) => (
           <input
             type="radio"
             name="note"
-            value="payMembership"
-            checked={val.note === "payMembership"}
+            value="continueMember"
+            checked={val.note === "continueMember"}
             onChange={handleChange("note")}
           />
           <span>เสียค่าสมาชิก</span>

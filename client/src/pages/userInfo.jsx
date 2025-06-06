@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
+import axios from 'axios';
 import { useParams } from "react-router-dom";
 import UserData1 from "../components/UserData1";
 import SignupAndEdit from "./SignupAndEdit"
 
 const UserInfo = () => {
-  const val = "8888";
+  const [val , setval] = useState([]);
+  const [formid , setFormid] = useState(0);
   const { citizenId } = useParams();
   const [showEditForm, setShowEditForm] = useState(false);
 
@@ -12,13 +14,33 @@ const UserInfo = () => {
     setShowEditForm(true);
   };
 
+    const baseURL = 'http://localhost:5000';
+
+  useEffect(() => {
+    axios.post(`${baseURL}/api/detail` ,{
+      formid:citizenId
+    })
+      .then(res => {
+        setval(res.data.info);
+        setFormid(res.data.formid)
+        console.log(res.data.info);
+        console.log(res.data);
+        
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  }, []);
+
+
+
   return (
     <>
       {!showEditForm ? (
         <div style={{ display: "flex", gap: "50px", padding: "50px" }}>
           <div style={{ flex: 1 , maxWidth:"300px" }}>
             <img
-              src="https://imagedelivery.net/LBWXYQ-XnKSYxbZ-NuYGqQ/22f1b7f8-54e4-43e3-316f-fc2465df9500/avatarhd"
+              src={val.teacherPicture}
               alt=""
               style={{ width: "100%", height: "auto" , border:"1px solid #127681" }}
             />
@@ -38,7 +60,7 @@ const UserInfo = () => {
 
             <div style={{ padding: "30px", border: "1px solid #127681", display:"flex" , justifyContent:"center" }}>
               <img
-                src="https://amzirlodp-prd-s3.s3.amazonaws.com/documents/images/big_4cda85d892a5c0b5dd63b510a9c83e9c9d06e739.jpg"
+                src={val.copyIdcard}
                 alt=""
                 style={{ width: "auto", height: "640px"}}
               />
@@ -46,7 +68,7 @@ const UserInfo = () => {
 
             <div style={{ padding: "30px", border: "1px solid #127681", display:"flex" , justifyContent:"center" }}>
               <img
-                src="https://amzirlodp-prd-s3.s3.amazonaws.com/documents/images/big_4cda85d892a5c0b5dd63b510a9c83e9c9d06e739.jpg"
+                src={val.copyTeachercard}
                 alt=""
                 style={{ width: "auto", height: "640px" }}
               />
@@ -54,7 +76,7 @@ const UserInfo = () => {
           </div>
         </div>
       ) : (
-        <SignupAndEdit memberData={{ citizenId, val }} isEditMode={true} />
+        <SignupAndEdit memberData={val} formid={formid} isEditMode={true} />
       )}
     </>
   );

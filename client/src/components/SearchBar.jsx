@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SearchBar = ({ searchTerm, setSearchTerm }) => {
+const SearchBar = ({ setKeyword }) => {
   return (
     <div style={{ backgroundColor: "#127681", margin: "20px 0px", padding: "20px", display: "flex", justifyContent: "space-around", alignItems: "center" }}>
       <h1 style={{ color: "white", fontWeight: "inherit", margin: 0 }}>ค้นหาเอกสาร</h1>
@@ -9,8 +9,7 @@ const SearchBar = ({ searchTerm, setSearchTerm }) => {
         <input
           type="text"
           placeholder="ค้นหาด้วยเลขบัตรประชาชน / ชื่อเล่น / ชื่อจริง"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => setKeyword(e.target.value)}
           style={{
             padding: '20px 0px 20px 10px', 
             width: '100%',

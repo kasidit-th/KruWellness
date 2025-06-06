@@ -9,6 +9,11 @@ const db = require("./models");
 const port = process.env.PORT || 5000;
 
 const app = express();
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+})
+);
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -21,11 +26,6 @@ if (process.env.NODE_ENV === "production") {
 
 fs.readdirSync("./routes").map((r) => app.use("/", require("./routes/" + r)));
 
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-  })
-);
 
 const start = async () => {
   try {

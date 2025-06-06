@@ -1,7 +1,10 @@
-import React from "react";
+import React , {useState} from "react";
 import { ThailandAddressTypeahead } from "react-thailand-address-typeahead";
 
-const formStep1 = ({ val, handleChange, handleValueChange }) => {
+const FormStep1 = ({ val, handleChange, handleValueChange }) => {
+
+  const [welfareApplicantOtherType , setWelfareApplicantOtherType] = useState("")
+
   const handlecitizenIdInput = (e, index) => {
     const inputVal = e.target.value.replace(/\D/g, "");
 
@@ -235,23 +238,27 @@ const formStep1 = ({ val, handleChange, handleValueChange }) => {
         <label htmlFor="citizenId">หมายเลขบัตรประชาชน</label>
         <div className="idCardInputWrapper">
           {Array.from({ length: 13 }).map((_, index) => {
-            const value = val.citizenId?.[index] || "";
-            const isDash = [0, 4, 9, 11].includes(index);
-            return (
-              <React.Fragment key={index}>
-                <input
-                  style={{ width: "30px" }}
-                  type="text"
-                  placeholder=""
-                  maxLength={1}
-                  value={value}
-                  onChange={(e) => handlecitizenIdInput(e, index)}
-                  onKeyDown={(e) => handlecitizenIdKeyDown(e, index)}
-                  className="idBox"
-                />
-                {isDash && <span className="dash">-</span>}
-              </React.Fragment>
-            );
+const idString = String(val.citizenId || "");
+
+const value = idString[index] || "";
+const isDash = [0, 4, 9, 11].includes(index);
+
+return (
+  <React.Fragment key={index}>
+    <input
+      style={{ width: "30px" }}
+      type="text"
+      placeholder=""
+      maxLength={1}
+      value={value}
+      onChange={(e) => handlecitizenIdInput(e, index)}
+      onKeyDown={(e) => handlecitizenIdKeyDown(e, index)}
+      className="idBox"
+    />
+    {isDash && <span className="dash">-</span>}
+  </React.Fragment>
+);
+
           })}
         </div>
       </div>
@@ -396,12 +403,12 @@ const formStep1 = ({ val, handleChange, handleValueChange }) => {
           />
         </div>
         <div>
-          <label htmlFor="spouseLastName">นามสกุล</label>
+          <label htmlFor="spouseLastname">นามสกุล</label>
           <input
             type="text"
             placeholder="นามสกุล"
-            value={val.spouseLastName || ""}
-            onChange={handleChange("spouseLastName")}
+            value={val.spouseLastname || ""}
+            onChange={handleChange("spouseLastname")}
           />
         </div>
       </div>
@@ -464,24 +471,46 @@ const formStep1 = ({ val, handleChange, handleValueChange }) => {
             />
             <span>บุตร</span>
           </label>
+<label className="radioItem">
+  <input
+    type="radio"
+    name="welfareApplicantType"
+    value=" "
+    checked={
+      val.welfareApplicantType !== "husband" &&
+      val.welfareApplicantType !== "wife" &&
+      val.welfareApplicantType !== "child" &&
+      val.welfareApplicantType !== null &&
+      val.welfareApplicantType !== undefined &&
+      val.welfareApplicantType !== ""
+    }
+    onChange={() => {
+      handleChange("welfareApplicantType")({
+        target: { value: welfareApplicantOtherType || " " },
+      });
+    }}
+  />
+  <span>อื่นๆ</span>
 
-          <label className="radioItem">
-            <input
-              type="radio"
-              name="welfareApplicantType"
-              value="other"
-              checked={val.welfareApplicantType === "other"}
-              onChange={handleChange("welfareApplicantType")}
-            />
-            <span>อื่นๆ</span>
-              <input
-                type="text"
-                style={{ margin: "0px 10px" }}
-                placeholder="โปรดระบุ"
-                value={val.welfareApplicantOtherType || ""}
-                onChange={handleChange("welfareApplicantOtherType")}
-              />
-          </label>
+  {val.welfareApplicantType !== "husband" &&
+    val.welfareApplicantType !== "wife" &&
+    val.welfareApplicantType !== "child" && (
+      <input
+        type="text"
+        style={{ margin: "0px 10px" }}
+        placeholder="โปรดระบุ"
+        value={val.welfareApplicantType || welfareApplicantOtherType}
+        onChange={(e) => {
+          const text = e.target.value;
+          setWelfareApplicantOtherType(text);
+          handleChange("welfareApplicantType")({
+            target: { value: text },
+          });
+        }}
+      />
+    )}
+</label>
+
         </div>
       </div>
 
@@ -523,7 +552,7 @@ const formStep1 = ({ val, handleChange, handleValueChange }) => {
   );
 };
 
-export default formStep1;
+export default FormStep1;
 {
   /* <ThailandAddressTypeahead.PostalCodeInput placeholder="รหัสไปรษณีย์" /> */
 }

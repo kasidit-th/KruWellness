@@ -6,7 +6,7 @@ import FormStep2 from "../components/formStep2";
 import FormStep3 from "../components/formStep3";
 import { useNavigate } from "react-router-dom";
 
-const SignupAndEdit = ({ memberData, isEditMode }) => {
+const SignupAndEdit = ({ memberData,formid ,isEditMode }) => {
   const [step, setStep] = useState(0);
   const [val, setVal] = useState(memberData || {});
   const navigate = useNavigate();
@@ -34,29 +34,32 @@ const SignupAndEdit = ({ memberData, isEditMode }) => {
   const handleSubmit = async () => {
     console.log(val);
     try {
-      const apiUrl = isEditMode ? "/api/members/edit" : "/api/members/create";
+      const apiUrl = isEditMode ? "/api/update" : "/api/create";
       const formData = new FormData();
 
       Object.keys(val).forEach((key) => {
         formData.append(key, val[key]);
       });
 
+      if(isEditMode){
+        formData.append("formid" , formid);
+      }
+
       if (val.file) {
         formData.append("file", val.file);
       }
+  const response = await axios.post(apiUrl, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 
-      await axios.post(apiUrl, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      alert("ส่งข้อมูลเรียบร้อยแล้ว!");
-      console.log(val);
-      navigate(`/userInfo/${val.citizenId}`);
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      alert("เกิดข้อผิดพลาดในการส่งข้อมูล");
-    }
-  };
+  navigate(`/userInfo/${response.data.items}`);
+  console.log(response.data.items);
+  window.location.reload();
+} catch (err) {
+  console.error(err);
+  alert("เกิดข้อผิดพลาดในการส่งข้อมูล");
+}
+}
 
   return (
     <div style={{ margin: "0% 5%" }}>

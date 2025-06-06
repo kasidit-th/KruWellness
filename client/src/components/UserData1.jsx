@@ -1,51 +1,51 @@
 import React, { useState } from "react";
 
-const UserData1 = ({}) => {
-  const val = {
-    docId: "89754",
-    RegisterDate: "12",
-    RegisterMonth: "เมษายน",
-    RegisterYear: "2566",
-    titleName: "นาย",
-    name: "สมชาย",
-    lastname: "ใจดี",
-    nickname: "ซาอุด",
-    age: "35",
-    birthDate: "15",
-    birthMonth: "มีนาคม",
-    birthYear: "2533",
-    citizenId: "3256987458963",
-    houseNumber: "123/4",
-    housemoo: "5",
-    houseSoi: "สุขใจ 7",
-    houseRoad: "ประชาราษฎร์",
-    houseSubdistrict: "บางเขน",
-    houseDistrict: "หลักสี่",
-    houseProvince: "กรุงเทพมหานคร",
-    mobilePhone: "0891234567",
-    housePhone: "021234567",
-    maritalStatus: "married",
-    titlespouseName: "นาง",
-    spouseName: "สวยสุดา",
-    spouseLastname: "ใจดี",
-    spouseAge: "34",
-    spousePhone: "0897654321",
-    welfareApplicantType: "child",
-    welfareApplicantOtherType: "",
-    titlewelfareApplicantName: "เด็กชาย",
-    welfareApplicantName: "สมปอง",
-    welfareApplicantLastName: "ใจดี",
-    teachStatus: "teacher",
-    schoolName: "โรงเรียนบ้านบางเขน",
-    schoolId: "987",
-    schoolRoad: "งามวงศ์วาน",
-    schoolSubdistrict: "ทุ่งสองห้อง",
-    schoolDistrict: "หลักสี่",
-    schoolProvince: "กรุงเทพมหานคร",
-    examUnit: "หน่วยที่ 2",
-    educationDistrict: "เขต 1",
-    note: "newCard"
-  };
+const UserData1 = ({ val }) => {
+  // const val = {
+  //   docId: "89754",
+  //   RegisterDate: "12",
+  //   RegisterMonth: "เมษายน",
+  //   RegisterYear: "2566",
+  //   titleName: "นาย",
+  //   name: "สมชาย",
+  //   lastname: "ใจดี",
+  //   nickname: "ซาอุด",
+  //   age: "35",
+  //   birthDate: "15",
+  //   birthMonth: "มีนาคม",
+  //   birthYear: "2533",
+  //   citizenId: "3256987458963",
+  //   houseNumber: "123/4",
+  //   housemoo: "5",
+  //   houseSoi: "สุขใจ 7",
+  //   houseRoad: "ประชาราษฎร์",
+  //   houseSubdistrict: "บางเขน",
+  //   houseDistrict: "หลักสี่",
+  //   houseProvince: "กรุงเทพมหานคร",
+  //   mobilePhone: "0891234567",
+  //   housePhone: "021234567",
+  //   maritalStatus: "married",
+  //   titlespouseName: "นาง",
+  //   spouseName: "สวยสุดา",
+  //   spouseLastname: "ใจดี",
+  //   spouseAge: "34",
+  //   spousePhone: "0897654321",
+  //   welfareApplicantType: "child",
+  //   welfareApplicantOtherType: "",
+  //   titlewelfareApplicantName: "เด็กชาย",
+  //   welfareApplicantName: "สมปอง",
+  //   welfareApplicantLastName: "ใจดี",
+  //   teachStatus: "teacher",
+  //   schoolName: "โรงเรียนบ้านบางเขน",
+  //   schoolId: "987",
+  //   schoolRoad: "งามวงศ์วาน",
+  //   schoolSubdistrict: "ทุ่งสองห้อง",
+  //   schoolDistrict: "หลักสี่",
+  //   schoolProvince: "กรุงเทพมหานคร",
+  //   examUnit: "หน่วยที่ 2",
+  //   educationDistrict: "เขต 1",
+  //   note: "newCard"
+  // };
   
 
   return (
@@ -123,7 +123,7 @@ const UserData1 = ({}) => {
                   className="idBox"
                   style={{ fontSize: "24px", padding: "10px", height: "30px" }}
                 >
-                  {val.citizenId?.[index] || ""}
+                  {String(val.citizenId)?.[index] || ""}
                 </div>
                 {isDashAfter && (
                   <span style={{ margin: "0 4px", fontSize: "18px" }}>-</span>
@@ -237,8 +237,7 @@ const UserData1 = ({}) => {
         </div>
         <div className="customRadioItem">
           <div
-            className={`customRadioBox ${
-              val.welfareApplicantType === "other" ? "checked" : ""
+            className={`customRadioBox ${val.welfareApplicantType !== "husband" && val.welfareApplicantType !== "wife" && val.welfareApplicantType !== "child" ? "checked" : ""
             }`}
           ></div>
           <span>อื่นๆ</span>
@@ -247,7 +246,8 @@ const UserData1 = ({}) => {
           className="formData"
           style={{ margin: "0px 10px", height: "24px" }}
         >
-          {val.welfareApplicantOtherType || ""}
+
+          {val.welfareApplicantType !== "husband" && val.welfareApplicantType !== "wife" && val.welfareApplicantType !== "child" ? val.welfareApplicantType  : ""}
         </div>
       </div>
 
@@ -293,7 +293,7 @@ const UserData1 = ({}) => {
         <div className="formData" style={{width:"480px"}}>{val.schoolName || ""}</div>
         <label>เลขที่</label>
         <div className="formData" style={{ width: "50px" }}>
-          {val.schoolId || ""}
+          {val.schoolid || ""}
         </div>
       </div>
       <div className="formLabel">
@@ -326,7 +326,7 @@ const UserData1 = ({}) => {
         <div className="customRadioItem">
           <div
             className={`customRadioBox ${
-              val.note === "renewalCard" ? "checked" : ""
+              val.note === "continueCard" ? "checked" : ""
             }`}
           ></div>
            <span>ขอต่ออายุบัตร</span>
@@ -334,7 +334,7 @@ const UserData1 = ({}) => {
         <div className="customRadioItem">
           <div
             className={`customRadioBox ${
-              val.note === "payMembership" ? "checked" : ""
+              val.note === "continueMember" ? "checked" : ""
             }`}
           ></div>
            <span>เสียค่าสมาชิก</span>
