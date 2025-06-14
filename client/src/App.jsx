@@ -49,7 +49,7 @@ const Navbar = () => {
             บัตรหมดอายุ
           </Link>
           <Link to="/membership" style={linkStyle("/membership")}>
-            สมาชิก
+            ค่าสมาชิก
           </Link>
         </div>
         <div style={{ textAlign: "right" }}>

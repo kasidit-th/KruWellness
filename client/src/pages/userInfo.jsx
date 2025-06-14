@@ -10,11 +10,17 @@ const UserInfo = () => {
   const { citizenId } = useParams();
   const [showEditForm, setShowEditForm] = useState(false);
 
-  const handleEdit = () => {
+const handleEdit = () => {
+  const password = prompt("กรุณากรอกรหัสผ่านเพื่อแก้ไขข้อมูล:");
+  if (password === "123456789") {
     setShowEditForm(true);
-  };
+  } else {
+    alert("รหัสผ่านไม่ถูกต้อง");
+  }
+};
 
-    const baseURL = 'http://localhost:5000';
+
+  const baseURL = 'http://localhost:5000';
 
   useEffect(() => {
     axios.post(`${baseURL}/api/detail` ,{

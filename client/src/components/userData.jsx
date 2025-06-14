@@ -65,7 +65,7 @@ const UserData = ({ data , setKeyword }) => {
               />
               <p><strong>ครู {teacher.nickname}</strong></p>
               <p>{teacher.name}</p>
-              <p>{formatId(teacher.idcard)}</p>
+              <p>{formatId(String(teacher.idcard))}</p>
             </div>
           ))}
         </div>

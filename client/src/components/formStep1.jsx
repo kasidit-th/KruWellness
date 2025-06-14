@@ -5,41 +5,42 @@ const FormStep1 = ({ val, handleChange, handleValueChange }) => {
 
   const [welfareApplicantOtherType , setWelfareApplicantOtherType] = useState("")
 
-  const handlecitizenIdInput = (e, index) => {
-    const inputVal = e.target.value.replace(/\D/g, "");
+const handlecitizenIdInput = (e, index) => {
+  const inputVal = e.target.value.replace(/\D/g, "");
 
-    const current = val.citizenId?.split("") || Array(13).fill("");
-    current[index] = inputVal;
+  const current = String(val.citizenId || "").split("");
+  current[index] = inputVal;
 
-    const newValue = current.join("").slice(0, 13);
-    handleChange("citizenId")({ target: { value: newValue } });
+  const newValue = current.join("").slice(0, 13);
+  handleChange("citizenId")({ target: { value: newValue } });
 
-    if (inputVal && index < 12) {
+  if (inputVal && index < 12) {
+    setTimeout(() => {
+      document.querySelectorAll(".idBox")[index + 1]?.focus();
+    }, 10);
+  }
+};
+
+const handlecitizenIdKeyDown = (e, index) => {
+  if (e.key === "Backspace") {
+    const current = String(val.citizenId || "").split("");
+    if (!current[index] && index > 0) {
+      e.preventDefault();
+      const newVal = [...current];
+      newVal[index - 1] = "";
+      handleChange("citizenId")({ target: { value: newVal.join("") } });
+
       setTimeout(() => {
-        document.querySelectorAll(".idBox")[index + 1]?.focus();
+        document.querySelectorAll(".idBox")[index - 1]?.focus();
       }, 10);
+    } else {
+      const newVal = [...current];
+      newVal[index] = "";
+      handleChange("citizenId")({ target: { value: newVal.join("") } });
     }
-  };
+  }
+};
 
-  const handlecitizenIdKeyDown = (e, index) => {
-    if (e.key === "Backspace") {
-      const current = val.citizenId?.split("") || Array(13).fill("");
-      if (!current[index] && index > 0) {
-        e.preventDefault();
-        const newVal = [...current];
-        newVal[index - 1] = "";
-        handleChange("citizenId")({ target: { value: newVal.join("") } });
-
-        setTimeout(() => {
-          document.querySelectorAll(".idBox")[index - 1]?.focus();
-        }, 10);
-      } else {
-        const newVal = [...current];
-        newVal[index] = "";
-        handleChange("citizenId")({ target: { value: newVal.join("") } });
-      }
-    }
-  };
 
   return (
     <div value={val} onValueChange={handleValueChange}>
