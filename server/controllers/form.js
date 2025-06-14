@@ -539,7 +539,7 @@ exports.searchmemberfee = async (req, res) => {
     query.forEach((item) => {
       const [day, month, year] = ISO_to_Thai(item.informdate);
 
-      let yearGroup = result.find((g) => g.year === year);
+      let yearGroup = result.find((g) => g.year === parseInt(year)+5 );
       if (!yearGroup) {
         yearGroup = { year: parseInt(year)+5, person: [] };
         result.push(yearGroup);
