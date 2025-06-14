@@ -460,13 +460,13 @@ exports.searchcardexpire = async (req, res) => {
 
       let yearGroup = years.find((g) => g.year === year);
       if (!yearGroup) {
-        yearGroup = { year, months: [] };
+        yearGroup = { year: parseInt(year)+4 };
         years.push(yearGroup);
       }
 
       let monthGroup = result.find((m) => m.month === month);
       if (!monthGroup) {
-        monthGroup = { year, month, person: [] };
+        monthGroup = { year: parseInt(year)+4, month, person: [] };
         result.push(monthGroup);
       }
 
@@ -499,7 +499,7 @@ exports.searchmemberfee = async (req, res) => {
     const limit = 200;
     const offset = (page - 1) * limit;
     const fiveYearsAgo = new Date();
-    fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5);
+    fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5, 0, 1);
     const isoDate = fiveYearsAgo.toISOString();
 
     const query = await sequelize.query(
@@ -541,7 +541,7 @@ exports.searchmemberfee = async (req, res) => {
 
       let yearGroup = result.find((g) => g.year === year);
       if (!yearGroup) {
-        yearGroup = { year, person: [] };
+        yearGroup = { year: parseInt(year)+5, person: [] };
         result.push(yearGroup);
       }
       const teacherPicture = item.picture
