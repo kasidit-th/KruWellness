@@ -65,7 +65,7 @@ const UserData = ({ data , setKeyword }) => {
               />
               <p><strong>ครู {teacher.nickname}</strong></p>
               <p>{teacher.name}</p>
-              <p>{formatId(String(teacher.idcard))}</p>
+              <p>{teacher.idcard == null ? formatId(String(teacher.idcard)) : "--"}</p>
             </div>
           ))}
         </div>

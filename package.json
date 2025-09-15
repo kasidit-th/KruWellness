@@ -1,26 +1,53 @@
 {
-  "name": "kruwellness",
+  "name": "Madrasah 9",
   "version": "1.0.0",
-  "description": "\"# KruWellness\"",
-  "main": "index.js",
+  "description": "Madrasah 9",
+  "author": "Madrasah 9",
+  "main": "electron-main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "cd server && npm install",
+    "rebuild": "cd server && npm rebuild",
     "start:client": "cd client && npm start",
     "start:server": "cd server && npm start",
-    "start": "concurrently \"npm run start:server\" \"npm run start:client\" "
+    "start:electron": "electron .",
+    "start": "concurrently \"npm run start:server\" \"npm run start:client\"",
+    "build:client": "cd client && npm run build",
+    "dist": "electron-builder --win --x64"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kasidit-th/KruWellness.git"
+  "dependencies": {
+    "create-desktop-shortcuts": "^1.11.1",
+    "electron-is-dev": "^2.0.0"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/kasidit-th/KruWellness/issues"
-  },
-  "homepage": "https://github.com/kasidit-th/KruWellness#readme",
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^8.2.2",
+    "electron": "^35.1.4",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.example.myapp",
+    "productName": "Madrasah 9",
+    "win": {
+      "target": "nsis",
+      "icon": "IconApp.ico"
+    },
+    "asarUnpack": [
+  "**/create-desktop-shortcuts/**"
+  ],
+    "directories": {
+      "output": "Madrasah 9_Installer_v.1.0.0"
+    },
+      "nsis": {
+    "oneClick": false,             
+    "allowToChangeInstallationDirectory": true,   
+    "createDesktopShortcut": true,            
+    "createStartMenuShortcut": true,            
+    "shortcutName": "Madrasah 9"
+  },
+  "asar": false, 
+  "files": [
+    "electron-main.js",
+    "client/build/**/*",
+    "server/**/*"
+  ]
   }
 }

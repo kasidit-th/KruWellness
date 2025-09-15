@@ -239,7 +239,14 @@ const handlecitizenIdKeyDown = (e, index) => {
         <label htmlFor="citizenId">หมายเลขบัตรประชาชน</label>
         <div className="idCardInputWrapper">
           {Array.from({ length: 13 }).map((_, index) => {
-const idString = String(val.citizenId || "");
+ let idString;
+ if(val.citizenId === null){
+  idString = "ไม่ระบุ"
+}
+else {
+
+  idString = String(val.citizenId || "");
+}
 
 const value = idString[index] || "";
 const isDash = [0, 4, 9, 11].includes(index);
