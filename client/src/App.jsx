@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  HashRouter,
   BrowserRouter,
   Routes,
   Route,
@@ -11,6 +12,15 @@ import SignupAndEdit from "./pages/SignupAndEdit";
 import Expired from "./pages/Expired";
 import Membership from "./pages/Membership";
 import UserInfo from "./pages/userInfo";
+
+// 🔎 ฟังก์ชันเช็คว่าอยู่ใน Electron หรือไม่
+const isElectron = () => {
+  return !!(
+    typeof window !== "undefined" &&
+    window.process &&
+    window.process.type
+  );
+};
 
 const Navbar = () => {
   const location = useLocation();
@@ -70,26 +80,31 @@ const Navbar = () => {
   );
 };
 
+const AppRoutes = () => (
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      marginBottom: "20vh",
+    }}
+  >
+    <Navbar />
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/expired" element={<Expired />} />
+      <Route path="/membership" element={<Membership />} />
+      <Route path="/SignupAndEdit" element={<SignupAndEdit />} />
+      <Route path="/userInfo/:citizenId" element={<UserInfo />} />
+    </Routes>
+  </div>
+);
+
 const App = () => {
+  const Router = isElectron() ? HashRouter : BrowserRouter;
   return (
-    <BrowserRouter>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          marginBottom: "20vh",
-        }}
-      >
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/expired" element={<Expired />} />
-          <Route path="/membership" element={<Membership />} />
-          <Route path="/SignupAndEdit" element={<SignupAndEdit />} />
-          <Route path="/userInfo/:citizenId" element={<UserInfo />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+    <Router>
+      <AppRoutes />
+    </Router>
   );
 };
 
