@@ -10,12 +10,10 @@ const HomePage = () => {
   const baseURL = 'http://localhost:5000';
 
   useEffect(() => {
-    axios.post(`${baseURL}/api/search` ,{
-      keyword:keyword
-    })
+    axios.get(`${baseURL}/api/users`)
       .then(res => {
-        setData(res.data.items);
-        console.log(res.data.items);
+        setData(res.data);
+        console.log(res.data);
         
       })
       .catch(err => {

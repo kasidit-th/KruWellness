@@ -1,16 +1,13 @@
+// routes/config.routes.js
 import { Router } from "express";
-import { updateZoneTimeName, updateZonePresetName , createZone , editZone , deleteZone } from "../controllers/config.controller.js";
+import { getAll, getById, create, update, remove } from "../controllers/config.controller.js";
 
-const ZoneTimeNameRouter = Router();
-const ZonePresetNameRouter = Router();
-const CreateZone = Router()
-const EditZone = Router();
-const DeleteZone = Router();
+const router = Router();
 
-ZoneTimeNameRouter.post('/ZoneTimeName' , updateZoneTimeName);
-ZonePresetNameRouter.post('/ZonePresetName', updateZonePresetName);
-CreateZone.post('/createZone' , createZone);
-EditZone.post('/editZone', editZone);
-DeleteZone.post('/deleteZone', deleteZone);
+router.get("/users", getAll);
+router.get("/users/:id", getById);
+router.post("/users", create);
+router.put("/users/:id", update);
+router.delete("/users/:id", remove);
 
-export { ZoneTimeNameRouter, ZonePresetNameRouter , CreateZone , EditZone , DeleteZone };
+export default router;

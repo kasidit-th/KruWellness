@@ -11,6 +11,8 @@
     "@arcjet/node": "^1.0.0-beta.5",
     "@upstash/workflow": "^0.2.12",
     "cors": "^2.8.5",
+    "csv-parse": "^6.1.0",
+    "csv-stringify": "^6.6.0",
     "debug": "~2.6.9",
     "dotenv": "^16.5.0",
     "express": "~4.16.1",
